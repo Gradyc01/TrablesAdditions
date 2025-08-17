@@ -1,0 +1,4 @@
+name: TrablesAdditions
+version: '1.0'
+main: me.depickcator.trablesAdditions.TrablesAdditions
+api-version: '1.21'
