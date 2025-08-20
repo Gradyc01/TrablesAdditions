@@ -1,17 +1,38 @@
 package me.depickcator.trablesAdditions;
 
+import me.depickcator.Test.Commands.CreateWorld;
+import me.depickcator.Test.Commands.Debugger;
+import me.depickcator.Test.Commands.TrablesTest;
+import me.depickcator.Test.Commands.Travel;
+import me.depickcator.trablesAdditions.Listeners.InventoryListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TrablesAdditions extends JavaPlugin {
-
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
+    private static TrablesAdditions instance;
+    private TrablesAdditions() {
 
     }
 
     @Override
+    public void onEnable() {
+        instance = this;
+        initCommands();
+        initListeners();
+    }
+
+    @Override
     public void onDisable() {
-        // Plugin shutdown logic
+    }
+
+    public static TrablesAdditions getInstance() {
+        return instance;
+    }
+
+    private void initCommands() {
+        new Debugger(); new TrablesTest(); new CreateWorld(); new Travel();
+    }
+
+    private void initListeners() {
+        new InventoryListener();
     }
 }

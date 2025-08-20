@@ -2,3 +2,14 @@ name: TrablesAdditions
 version: '1.0'
 main: me.depickcator.trablesAdditions.TrablesAdditions
 api-version: '1.21'
+commands:
+  debugger:
+    permission: trablesAdditions.debugger
+  trables-test:
+    permission: trablesAdditions.debugger
+  create-world:
+    permission: trablesAdditions.debugger
+  travel:
+    permission: trablesAdditions.debugger
+depend:
+  - WorldEdit
