@@ -34,6 +34,14 @@ public class FloodBlocks {
         TextUtil.debugText("RealmAnimation","Flood Size " + floodLocations.size());
         for (Pair<Location, Double> floodLocation : new HashSet<>(floodLocations)) {
             floodBlock(floodLocation.getLeft(), floodLocation.getRight(), r);
+            floodLocations.remove(floodLocation);
+        }
+    }
+
+    public void autoFlood(Random r) {
+        floodBlock(startingPoint, successRate, r);
+        while (!floodLocations.isEmpty()) {
+            flood(r);
         }
     }
 

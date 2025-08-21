@@ -58,17 +58,12 @@ public class TrablesTest extends TrablesCommands {
                     }
                 }
             }
-            case "play-animation" -> {
-                if (sender instanceof Player player) {
-                    new RealmOpeningAnimation(player.getLocation());
-                }
-            }
         }
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        return List.of("open-main-menu", "add-playerData", "remove-playerData", "play-animation");
+        return List.of("open-main-menu", "add-playerData", "remove-playerData");
     }
 }

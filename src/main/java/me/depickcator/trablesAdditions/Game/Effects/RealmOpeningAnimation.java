@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Effects;
 
 import me.depickcator.trablesAdditions.Game.Effects.Interfaces.Floodable;
+import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.*;
@@ -14,10 +15,12 @@ import java.util.*;
 public class RealmOpeningAnimation implements Floodable {
     private final Location centerPoint;
     private final ArmorStand armorStand;
+    private RealmController realmController;
     private final FloodBlocks floodBlocks;
 
-    public RealmOpeningAnimation(Location centerPoint) {
+    public RealmOpeningAnimation(Location centerPoint, RealmController realmController) {
         this.centerPoint = centerPoint;
+        this.realmController = realmController;
         armorStand = initArmorstand();
         floodBlocks = new FloodBlocks(centerPoint.clone().add(0, -1, 0), 1.20, this);
         start();
@@ -33,7 +36,9 @@ public class RealmOpeningAnimation implements Floodable {
             public void run() {
                 if (timePassed % 100 == 0) {
                     spinParticle(0); spinParticle(Math.PI / 2);
-                    spinParticle(Math.PI );spinParticle( 3 * Math.PI / 2);
+                    spinParticle(Math.PI); spinParticle( 3 * Math.PI / 2);
+                    spinParticle(Math.PI /4);spinParticle( 3 * Math.PI / 4);
+                    spinParticle(5 * Math.PI / 4);spinParticle( 7 * Math.PI / 4);
                     floodBlocks.flood(random);
                     centerPoint.getWorld().playSound(centerPoint, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 1F, 0);
                 }
@@ -45,6 +50,7 @@ public class RealmOpeningAnimation implements Floodable {
                 }
                 if (timePassed++ >= ticks) {
                     armorStand.remove();
+                    realmController.openPortal();
                     cancel();
                 }
             }
@@ -72,7 +78,8 @@ public class RealmOpeningAnimation implements Floodable {
                 double x = 7 * Math.cos(t);
                 double z = 7 * Math.sin(t);
                 Location loc = centerPoint.clone().add(x, y, z);
-                loc.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, loc, 1);
+//                loc.getWorld().spawnParticle(Particle.FLAME, loc, 1, 0, 0, 0);
+                loc.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, loc, 1, 0, 0, 0, 0);
 //                TextUtil.debugText("RealmAnimation", "Spawned particle at (" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ")");
                 if (t >= Math.PI * 4 + initialTime) cancel();
             }
@@ -103,6 +110,6 @@ public class RealmOpeningAnimation implements Floodable {
 
     @Override
     public double getNewSuccessRate(double oldSuccessRate, Random r) {
-        return oldSuccessRate - r.nextDouble(0.05, 0.35);
+        return oldSuccessRate - r.nextDouble(0.1, 0.20);
     }
 }

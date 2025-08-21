@@ -5,10 +5,10 @@ import org.bukkit.Location;
 
 public abstract class Realm implements TrablesMenuActionable {
     private final Location portalLocation;
-    private final String WORLD_NAME;
-    public Realm(Location portalLocation, String worldName) {
+    private final String REALM_NAME;
+    public Realm(Location portalLocation, String realmName) {
         this.portalLocation = portalLocation;
-        this.WORLD_NAME = worldName;
+        this.REALM_NAME = realmName;
     }
 
     public abstract void openPortal();
@@ -20,6 +20,14 @@ public abstract class Realm implements TrablesMenuActionable {
     }
 
     public String getWorldName() {
-        return WORLD_NAME;
+        return REALM_NAME;
+    }
+
+    public String getWorldFilePath() {
+        return "./plugins/TrablesAdditions/Realms/" + getWorldName() + "/world";
+    }
+
+    public String getPortalSchemFilePath() {
+        return "./plugins/TrablesAdditions/Realms/" + getWorldName() + "/portal.schem";
     }
 }

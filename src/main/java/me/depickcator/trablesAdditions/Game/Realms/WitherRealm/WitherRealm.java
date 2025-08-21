@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class WitherRealm extends Realm {
 
     public WitherRealm(Location location) {
-        super(location, "test-world-1");
+        super(location, "TestRealm");
 
     }
 
