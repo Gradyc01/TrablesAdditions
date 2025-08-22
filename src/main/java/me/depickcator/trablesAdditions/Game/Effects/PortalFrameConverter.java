@@ -1,16 +1,13 @@
 package me.depickcator.trablesAdditions.Game.Effects;
 
 import me.depickcator.trablesAdditions.Game.Effects.Interfaces.Floodable;
+import me.depickcator.trablesAdditions.Listeners.DimensionalTravel;
 import me.depickcator.trablesAdditions.TrablesAdditions;
-import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.Axis;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.Map;
 import java.util.Random;
@@ -25,7 +22,7 @@ public class PortalFrameConverter implements Floodable {
         Orientable data = (Orientable) Material.NETHER_PORTAL.createBlockData();
         data.setAxis(Axis.Z);
         block.setBlockData(data, false);
-        block.setMetadata("Traverse", new FixedMetadataValue(TrablesAdditions.getInstance(), WORLD_NAME));
+        block.setMetadata(DimensionalTravel.DIMENSIONAL_TRAVEL_KEY, new FixedMetadataValue(TrablesAdditions.getInstance(), WORLD_NAME));
         return block;
     }
 

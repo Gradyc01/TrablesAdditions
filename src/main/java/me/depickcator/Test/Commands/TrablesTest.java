@@ -58,6 +58,11 @@ public class TrablesTest extends TrablesCommands {
                     }
                 }
             }
+            case "start-realm" -> {
+                if (sender instanceof Player player) {
+//                    player.getWorld().getName()
+                }
+            }
         }
         return true;
     }

@@ -4,7 +4,7 @@ import me.depickcator.Test.Commands.CreateWorld;
 import me.depickcator.Test.Commands.Debugger;
 import me.depickcator.Test.Commands.TrablesTest;
 import me.depickcator.Test.Commands.Travel;
-import me.depickcator.trablesAdditions.Listeners.InventoryListener;
+import me.depickcator.trablesAdditions.Listeners.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TrablesAdditions extends JavaPlugin {
@@ -22,6 +22,7 @@ public final class TrablesAdditions extends JavaPlugin {
 
     @Override
     public void onDisable() {
+
     }
 
     public static TrablesAdditions getInstance() {
@@ -33,6 +34,7 @@ public final class TrablesAdditions extends JavaPlugin {
     }
 
     private void initListeners() {
-        new InventoryListener();
+        new InventoryListener(); new DimensionalTravel(); new BlockChange();
+        new EntityDeath(); new MobSpawning();
     }
 }

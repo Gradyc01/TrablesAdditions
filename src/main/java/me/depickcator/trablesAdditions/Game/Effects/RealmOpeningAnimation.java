@@ -15,7 +15,7 @@ import java.util.*;
 public class RealmOpeningAnimation implements Floodable {
     private final Location centerPoint;
     private final ArmorStand armorStand;
-    private RealmController realmController;
+    private final RealmController realmController;
     private final FloodBlocks floodBlocks;
 
     public RealmOpeningAnimation(Location centerPoint, RealmController realmController) {
