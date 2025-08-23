@@ -39,7 +39,7 @@ public class LocationMesh {
 
     /* Gets a number of locations specified in the count and whether they will be unique
      * Returns a Collection of Locations*/
-    public List<Location> getRandomItemFromList(Random r, int count, boolean uniqueItems) {
+    public List<Location> getRandomLocationsFromMesh(Random r, int count, boolean uniqueItems) {
         int totalWeight = this.totalWeight;
         List<Pair<Location, Integer>> locations = new ArrayList<>(this.locations);
         List<Location> ans = new ArrayList<>();
@@ -61,6 +61,18 @@ public class LocationMesh {
             }
         }
         return ans;
+    }
+
+    public List<Location> getAllLocations() {
+        List<Location> list = new ArrayList<>();
+        for (Pair<Location, Integer> pair : locations) {
+            list.add(pair.getLeft());
+        }
+        return list;
+    }
+
+    public List<Pair<Location, Integer>> getAllLocationsWeighted() {
+        return new ArrayList<>(locations);
     }
 
     /*Get the location that falls into the weight specified

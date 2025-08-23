@@ -27,7 +27,7 @@ public class RealmOpeningAnimation implements Floodable {
     }
 
     private void start() {
-        int ticks = 59 * 20;
+        int ticks = 9 * 20; //TODO: Change back to 59 later
         Random random = new Random();
         floodBlocks.start(random);
         new BukkitRunnable() {

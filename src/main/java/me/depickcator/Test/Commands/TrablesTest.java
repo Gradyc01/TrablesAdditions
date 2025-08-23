@@ -1,7 +1,7 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
-import me.depickcator.trablesAdditions.Game.Effects.RealmOpeningAnimation;
+import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -60,7 +60,14 @@ public class TrablesTest extends TrablesCommands {
             }
             case "start-realm" -> {
                 if (sender instanceof Player player) {
-//                    player.getWorld().getName()
+                    RealmController controller = RealmController.getController(player.getWorld().getName());
+                    controller.startRealm();
+                }
+            }
+            case "end-realm" -> {
+                if (sender instanceof Player player) {
+                    RealmController controller = RealmController.getController(player.getWorld().getName());
+                    controller.stopRealm();
                 }
             }
         }
@@ -69,6 +76,6 @@ public class TrablesTest extends TrablesCommands {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        return List.of("open-main-menu", "add-playerData", "remove-playerData");
+        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm");
     }
 }
