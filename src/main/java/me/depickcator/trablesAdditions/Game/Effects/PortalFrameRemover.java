@@ -1,6 +1,8 @@
 package me.depickcator.trablesAdditions.Game.Effects;
 
 import me.depickcator.trablesAdditions.Game.Effects.Interfaces.Floodable;
+import me.depickcator.trablesAdditions.Listeners.DimensionalTravel;
+import me.depickcator.trablesAdditions.TrablesAdditions;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -13,6 +15,7 @@ public class PortalFrameRemover implements Floodable {
     @Override
     public Block changeBlock(Block block, Random r, FloodBlocks floodBlocks) {
         block.setBlockData(Material.AIR.createBlockData(), true);
+        block.removeMetadata(DimensionalTravel.DIMENSIONAL_TRAVEL_KEY, TrablesAdditions.getInstance());
         return block;
     }
 

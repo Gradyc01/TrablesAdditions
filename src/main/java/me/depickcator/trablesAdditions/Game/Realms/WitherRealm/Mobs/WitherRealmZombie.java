@@ -2,21 +2,21 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
-import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.CraftWorld;
@@ -38,11 +38,10 @@ public class WitherRealmZombie extends Zombie {
         this.random = random;
         giveAttributes();
         loot = new ArrayList<>(List.of(new ItemStack(Material.ROTTEN_FLESH)));
-//        for (Goal goal : super.targetSelector.)
-//        super.targetSelector.removeGoal(new HurtByTargetGoal(this, new Class[0]).setAlertOthers(new Class[]{ZombifiedPiglin.class}));
         super.targetSelector.removeAllGoals(goal -> true);
-        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, new Class[0])));
+        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class)));
         super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        generateRandomArmor();
     }
 
     @Override
@@ -71,18 +70,9 @@ public class WitherRealmZombie extends Zombie {
         this.getAttribute(Attributes.ARMOR).addPermanentModifier(new AttributeModifier(Mob.RANDOM_SPAWN_BONUS_ID, 14, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
     }
 
-    public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes()
-                .add(Attributes.FOLLOW_RANGE, 35.0F)
-                .add(Attributes.MOVEMENT_SPEED, 0.23F)
-                .add(Attributes.ATTACK_DAMAGE, 3.0F)
-                .add(Attributes.ARMOR, 2.0F)
-                .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
-    }
-
     private void giveAttributes() {
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.25F);
-        this.getAttribute(Attributes.ARMOR).setBaseValue(15.0F);
+        this.getAttribute(Attributes.ARMOR).setBaseValue(10.0F);
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(25.0F);
         this.setHealth(this.getMaxHealth());
         this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(25.0F);
@@ -91,8 +81,37 @@ public class WitherRealmZombie extends Zombie {
         this.setPersistenceRequired(true);
     }
 
-//    @Override
-//    protected boolean shouldDropLoot() {
-//        return false;
-//    }
+    private void generateRandomArmor() {
+        EntityEquipment equipment = this.equipment;
+        equipment.set(EquipmentSlot.HEAD,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.HEAD, generateNumber()))));
+        equipment.set(EquipmentSlot.CHEST,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.CHEST, generateNumber()))));
+        equipment.set(EquipmentSlot.LEGS,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.LEGS, generateNumber()))));
+        equipment.set(EquipmentSlot.FEET,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.FEET, generateNumber()))));
+    }
+
+    private int generateNumber() {
+        if (random.nextDouble() < 0.75) {
+            return -1;
+        } else if (random.nextDouble() < 0.85) {
+            return 0;
+        } else if (random.nextDouble() < 0.93) {
+            return 1;
+        } else if (random.nextDouble() < 0.98) {
+            return 2;
+        }
+        return 3;
+    }
+
 }

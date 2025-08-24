@@ -4,8 +4,11 @@ import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
 import me.depickcator.trablesAdditions.TrablesAdditions;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -38,6 +41,11 @@ public abstract class WitherRealmState implements RealmStates {
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
         block.setMetadata("PLACED", new FixedMetadataValue(TrablesAdditions.getInstance(), true));
+        if (block.getType().equals(Material.TNT)) {
+            Block placedBlock = event.getBlockPlaced();
+            placedBlock.setType(Material.AIR);
+            placedBlock.getWorld().spawnEntity(placedBlock.getLocation().clone().add(0.5, 0 , 0.5), EntityType.TNT);
+        }
     }
 
     @Override
@@ -47,12 +55,23 @@ public abstract class WitherRealmState implements RealmStates {
 
     @Override
     public void onEntityExplode(EntityExplodeEvent event) {
-        List<Block> blocks = event.blockList();
-        for (Block block : new ArrayList<>(blocks)) {
+        onBlockExploded(event.blockList());
+    }
+
+    @Override
+    public void onBlockExplode(BlockExplodeEvent event) {
+        onBlockExploded(event.blockList());
+    }
+
+    private void onBlockExploded(List<Block> blockList) {
+        for (Block block : new ArrayList<>(blockList)) {
             if (!block.hasMetadata("PLACED")) {
-                blocks.remove(block);
+                blockList.remove(block);
             }
         }
     }
 
+    public WitherRealm getRealm() {
+        return realm;
+    }
 }

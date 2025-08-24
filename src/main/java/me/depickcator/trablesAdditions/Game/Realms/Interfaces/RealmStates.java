@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.Interfaces;
 
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -12,5 +13,6 @@ public interface RealmStates {
     void onBlockPlace(BlockPlaceEvent event);
     void onEntityDeath(EntityDeathEvent event);
     void onEntityExplode(EntityExplodeEvent event);
+    void onBlockExplode(BlockExplodeEvent event);
     String getStateName();
 }

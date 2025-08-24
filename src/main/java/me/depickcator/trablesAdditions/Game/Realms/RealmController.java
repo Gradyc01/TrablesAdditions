@@ -38,7 +38,6 @@ public class RealmController {
         String worldPath = realm.getWorldFilePath();
         copyWorld(worldPath, expendableWorldName);
         new RealmOpeningAnimation(realm.getPortalLocation(), this);
-
     }
 
     /*Opens the portal*/

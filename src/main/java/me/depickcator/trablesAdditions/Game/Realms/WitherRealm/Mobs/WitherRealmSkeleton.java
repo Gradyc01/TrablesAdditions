@@ -1,10 +1,14 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 
+import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,6 +32,7 @@ public class WitherRealmSkeleton extends Skeleton {
         this.random = random;
         giveAttributes();
         loot = new ArrayList<>(List.of(new ItemStack(Material.BONE)));
+        generateRandomArmor();
     }
 
     private void giveAttributes() {
@@ -38,6 +43,9 @@ public class WitherRealmSkeleton extends Skeleton {
         this.setHealth(this.getMaxHealth());
         this.setShouldBurnInDay(false);
         this.setPersistenceRequired(true);
+        super.targetSelector.removeAllGoals(goal -> true);
+        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class)));
+        super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.reassessWeaponGoal();
 //        this.equipment(EquipmentSlot.Mob.getEquipmentForSlot(EquipmentSlot.HEAD, random.nextInt(4));
     }
@@ -52,5 +60,38 @@ public class WitherRealmSkeleton extends Skeleton {
         if (random.nextDouble() < 0.10) meta.addEnchant(Enchantment.PUNCH, 2, true);
         bow.setItemMeta(meta);
         return bow;
+    }
+
+    private void generateRandomArmor() {
+        EntityEquipment equipment = this.equipment;
+        equipment.set(EquipmentSlot.HEAD,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.HEAD, generateNumber()))));
+        equipment.set(EquipmentSlot.CHEST,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.CHEST, generateNumber()))));
+        equipment.set(EquipmentSlot.LEGS,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.LEGS, generateNumber()))));
+        equipment.set(EquipmentSlot.FEET,
+                CraftItemStack.asNMSCopy(
+                        CraftItemStack.asNewCraftStack(
+                                Mob.getEquipmentForSlot(EquipmentSlot.FEET, generateNumber()))));
+    }
+
+    private int generateNumber() {
+        if (random.nextDouble() < 0.75) {
+            return -1;
+        } else if (random.nextDouble() < 0.85) {
+            return 0;
+        } else if (random.nextDouble() < 0.93) {
+            return 1;
+        } else if (random.nextDouble() < 0.98) {
+            return 2;
+        }
+        return 3;
     }
 }

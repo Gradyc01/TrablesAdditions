@@ -4,33 +4,36 @@ import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmSkeleton;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmZombie;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.*;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.States.Wither_InGameState;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.States.Wither_InitialState;
-import me.depickcator.trablesAdditions.Persistence.LocationMesh;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Registry;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.IOException;
-import java.util.Random;
+import java.util.*;
 
 public class WitherRealm extends Realm {
 
+    /*Takes Door mesh names and pairs them with the rooms that it would load*/
+    private final Map<String, Set<WitherRealmActions>> roomMap;
+    public static String WITHER_REALM_DUNGEON_DOOR_KEY = "wither_realm_dungeon_door";
+    private final Set<WitherRealmActions> roomsLoaded;
+    private RealmController controller;
+
     public WitherRealm(Location location) {
         super(location, "TestRealm", "Test Realm");
+        roomMap = new HashMap<>();
+        roomsLoaded = new HashSet<>();
     }
 
     @Override
@@ -40,35 +43,54 @@ public class WitherRealm extends Realm {
         TextUtil.broadcastMessage(TextUtil.makeText(player.getName() + " has activated WitherRealm it will be placed at"
         + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ(), TextUtil.AQUA));
         if (!loc.getBlock().isLiquid()) {
-            new RealmController(this).initialize();
+            controller = new RealmController(this);
+            controller.initialize(); //Don't add anything past this that relies on the controller as the root may still be null
+
         } else return false;
         return true;
     }
 
     @Override
     public void onStart(RealmController controller) {
-        World world = controller.getWorld();
-        try {
-            LocationMesh room1Mesh = controller.getReader().getLocationsMesh("room_1", world);
-            Random random = new Random();
+        if (!new WitherRealm_LoadRoom( "room_1", controller).start()) return;
+        if (!new WitherRealm_FillLoot( "chest_1", controller, Material.BARREL).start()) return;
+        startAnimation(controller);
+        loadDoors();
+        setRealmState(new Wither_InGameState(this));
+    }
 
-            for (Pair<Location, Integer> spawnLoc : room1Mesh.getAllLocationsWeighted()) {
-                switch (spawnLoc.getRight()) {
-                    case 1 -> new WitherRealmZombie(spawnLoc.getLeft(), random);
-                    case 2 -> new WitherRealmSkeleton(spawnLoc.getLeft(), random);
+    public void triggerDoor(String doorMeshName) {
+        if (roomMap.containsKey(doorMeshName) && new WitherRealm_BreakDoor(doorMeshName, controller).start()) {
+            for (WitherRealmActions action : roomMap.get(doorMeshName)) {
+                if (!roomsLoaded.contains(action)) {
+                    roomsLoaded.add(action);
+                    action.start();
                 }
             }
-
-            startAnimation(controller);
-            setRealmState(new Wither_InGameState(this));
-        } catch (IOException e) {
-            TextUtil.debugText("Wither Realm", e.getMessage());
         }
     }
 
     @Override
     public void onLoop(RealmController controller) {
 
+    }
+
+    private void loadDoors() {
+        addDoor("door_2", Set.of("room_2"), Set.of("chest_2"));
+    }
+
+    private void addDoor(String doorMeshName, Set<String> roomMeshNames, Set<String> chestMeshNames) {
+        if (controller == null) return;
+        Set<WitherRealmActions> actions = new HashSet<>() ;
+        if (!new WitherRealm_LoadDoor(doorMeshName, controller).start()) return;
+        for (String roomMeshName : roomMeshNames) {
+            actions.add(new WitherRealm_LoadRoom(roomMeshName, controller));
+
+        }
+        for (String chestMeshName : chestMeshNames) {
+            actions.add(new WitherRealm_FillLoot(chestMeshName, controller, Material.BARREL));
+        }
+        roomMap.put(doorMeshName, actions);
     }
 
     private void startAnimation(RealmController controller) {
@@ -86,17 +108,7 @@ public class WitherRealm extends Realm {
             private void finish() {
                 audience.playSound(Sound.sound().type(Registry.SOUNDS.getKey(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)).pitch(2f)
                         .volume(10).build());
-                try {
-                    LocationMesh mesh = controller.getReader().getLocationsMesh("door", controller.getWorld());
-                    for (Location location : mesh.getAllLocations()) {
-                        Block block = location.getBlock();
-                        block.setType(Material.BEDROCK);
-                        location.getBlock().breakNaturally(true);
-                    }
-                } catch (IOException e) {
-                    TextUtil.debugText("Wither Realm Error", e.getMessage());
-                    controller.stopRealm();
-                }
+                new WitherRealm_BreakDoor("door",controller).start();
             }
         }.runTaskTimer(TrablesAdditions.getInstance(), 0, 20);
     }
