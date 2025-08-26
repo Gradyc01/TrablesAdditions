@@ -15,11 +15,15 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Registry;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.Instant;
 import java.util.*;
 
 public class WitherRealm extends Realm {
@@ -28,12 +32,14 @@ public class WitherRealm extends Realm {
     private final Map<String, Set<WitherRealmActions>> roomMap;
     public static String WITHER_REALM_DUNGEON_DOOR_KEY = "wither_realm_dungeon_door";
     private final Set<WitherRealmActions> roomsLoaded;
+    private final Map<Block, Integer> placedBlocks;
     private RealmController controller;
 
     public WitherRealm(Location location) {
         super(location, "TestRealm", "Test Realm");
         roomMap = new HashMap<>();
         roomsLoaded = new HashSet<>();
+        placedBlocks = new HashMap<>();
     }
 
     @Override
@@ -72,11 +78,57 @@ public class WitherRealm extends Realm {
 
     @Override
     public void onLoop(RealmController controller) {
+        removeOldBlocks();
+    }
 
+    public void addPlacedBlock(Block block) {
+        block.setMetadata("PLACED", new FixedMetadataValue(TrablesAdditions.getInstance(), Instant.now()));
+        placedBlocks.put(block, 1 + placedBlocks.getOrDefault(block, 0));
+    }
+
+    public boolean containsPlacedBlock(Block block) {
+        return placedBlocks.containsKey(block);
     }
 
     private void loadDoors() {
         addDoor("door_2", Set.of("room_2"), Set.of("chest_2"));
+        addDoor("door_3m", Set.of("room_3m"), Set.of("chest_3m"));
+        addDoor("door_3l", Set.of("room_3l"), Set.of("chest_3l"));
+        addDoor("door_3r", Set.of("room_3r"), Set.of("chest_3r"));
+        addDoor("door_3r_pillar", Set.of("room_3r_pillar"), Set.of());
+        addDoor("door_3r_upper", Set.of("room_3r_upper"), Set.of());
+        addDoor("door_3l_upper", Set.of("room_3l_upper"), Set.of());
+        addDoor("door_3l_upper_kings", Set.of(), Set.of());
+        addDoor("door_3l_chest", Set.of(), Set.of());
+    }
+
+    private void removeOldBlocks() {
+        Instant now = Instant.now();
+        for (Block block : new HashSet<>(placedBlocks.keySet())) {
+            if (!block.hasMetadata("PLACED")) {
+                removeBlock(block);
+                return;
+            }
+            Instant time = Instant.parse(block.getMetadata("PLACED").getFirst().asString());
+            if (now.isAfter(time.plusSeconds(5))) {
+                removeBlock(block);
+            }
+        }
+    }
+
+    public void removeBlock(Block block) {
+        if (block.getBlockData() instanceof Waterlogged waterlogged) {
+            if (waterlogged.isWaterlogged()) waterlogged.setWaterlogged(false);
+            else block.setType(Material.AIR);
+        } else block.setType(Material.AIR);
+        if (placedBlocks.containsKey(block)) {
+            int amount = placedBlocks.get(block);
+            if (amount > 1) placedBlocks.put(block, amount - 1);
+            else placedBlocks.remove(block);
+        }
+        if (block.hasMetadata("PLACED")) {
+            block.removeMetadata("PLACED",  TrablesAdditions.getInstance());
+        }
     }
 
     private void addDoor(String doorMeshName, Set<String> roomMeshNames, Set<String> chestMeshNames) {

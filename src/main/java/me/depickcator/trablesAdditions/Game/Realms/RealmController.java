@@ -127,7 +127,7 @@ public class RealmController {
             public void run() {
                 realm.onLoop(RealmController.this);
             }
-        }.runTaskTimer(TrablesAdditions.getInstance(), 20, 20);
+        }.runTaskTimer(TrablesAdditions.getInstance(), 20, 5);
     }
 
     public Location getSpawnLocation()  {

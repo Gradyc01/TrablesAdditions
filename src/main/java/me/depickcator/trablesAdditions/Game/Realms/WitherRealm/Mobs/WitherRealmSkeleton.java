@@ -1,5 +1,13 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
+import me.depickcator.trablesAdditions.Util.NMSMobUtil;
+import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -8,6 +16,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.Stray;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
@@ -22,17 +31,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class WitherRealmSkeleton extends Skeleton {
+public class WitherRealmSkeleton extends Skeleton implements RealmNMSMob {
     private final List<ItemStack> loot;
     private final Random random;
+    private final Component name;
     public WitherRealmSkeleton(Location location, Random random) {
         super(EntityType.SKELETON, ((CraftWorld) location.getWorld()).getHandle());
         this.setPosRaw(location.getX(), location.getY(), location.getZ());
         ((CraftWorld) location.getWorld()).getHandle().addFreshEntity(this);
         this.random = random;
+        name = getMobName();
         giveAttributes();
         loot = new ArrayList<>(List.of(new ItemStack(Material.BONE)));
-        generateRandomArmor();
+        NMSMobUtil.generateRandomArmor(this.equipment, random);
     }
 
     private void giveAttributes() {
@@ -44,12 +55,18 @@ public class WitherRealmSkeleton extends Skeleton {
         this.setShouldBurnInDay(false);
         this.setPersistenceRequired(true);
         super.targetSelector.removeAllGoals(goal -> true);
-        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class)));
+        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class, Stray.class)));
         super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.reassessWeaponGoal();
 //        this.equipment(EquipmentSlot.Mob.getEquipmentForSlot(EquipmentSlot.HEAD, random.nextInt(4));
     }
 
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
+        boolean bool = super.hurtServer(level, damageSource, amount);
+        this.setCustomName(NMSMobUtil.generateHealthText(name, this));
+        return bool;
+    }
 
 
     private ItemStack initBow() {
@@ -58,40 +75,14 @@ public class WitherRealmSkeleton extends Skeleton {
         meta.addEnchant(Enchantment.POWER, 4, true);
         if (random.nextDouble() < 0.05) meta.addEnchant(Enchantment.FLAME, 1, true);
         if (random.nextDouble() < 0.10) meta.addEnchant(Enchantment.PUNCH, 2, true);
+        meta.setEnchantmentGlintOverride(false);
         bow.setItemMeta(meta);
         return bow;
     }
 
-    private void generateRandomArmor() {
-        EntityEquipment equipment = this.equipment;
-        equipment.set(EquipmentSlot.HEAD,
-                CraftItemStack.asNMSCopy(
-                        CraftItemStack.asNewCraftStack(
-                                Mob.getEquipmentForSlot(EquipmentSlot.HEAD, generateNumber()))));
-        equipment.set(EquipmentSlot.CHEST,
-                CraftItemStack.asNMSCopy(
-                        CraftItemStack.asNewCraftStack(
-                                Mob.getEquipmentForSlot(EquipmentSlot.CHEST, generateNumber()))));
-        equipment.set(EquipmentSlot.LEGS,
-                CraftItemStack.asNMSCopy(
-                        CraftItemStack.asNewCraftStack(
-                                Mob.getEquipmentForSlot(EquipmentSlot.LEGS, generateNumber()))));
-        equipment.set(EquipmentSlot.FEET,
-                CraftItemStack.asNMSCopy(
-                        CraftItemStack.asNewCraftStack(
-                                Mob.getEquipmentForSlot(EquipmentSlot.FEET, generateNumber()))));
-    }
 
-    private int generateNumber() {
-        if (random.nextDouble() < 0.75) {
-            return -1;
-        } else if (random.nextDouble() < 0.85) {
-            return 0;
-        } else if (random.nextDouble() < 0.93) {
-            return 1;
-        } else if (random.nextDouble() < 0.98) {
-            return 2;
-        }
-        return 3;
+    @Override
+    public Component getMobName() {
+        return Component.literal("Dungeon Skeleton").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(TextUtil.WHITE.value())));
     }
 }
