@@ -175,6 +175,7 @@ public class RealmController {
         WorldCreator worldCreator = new WorldCreator(path);
         addController(expendableWorldName, this);
         expendableWorld = worldCreator.createWorld();
+        realm.worldRules(expendableWorld);
         return expendableWorld;
     }
 

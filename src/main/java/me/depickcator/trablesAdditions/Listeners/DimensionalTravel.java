@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.Listeners;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,7 +44,7 @@ public class DimensionalTravel extends TrablesListeners {
                     Location l = loc.clone().add(x, y, z);
                     Block block = l.getBlock();
 //                    TextUtil.debugText("Checking Block " + block.getType().name());
-                    if (l.getBlock().hasMetadata(DIMENSIONAL_TRAVEL_KEY)) {
+                    if (l.getBlock().hasMetadata(DIMENSIONAL_TRAVEL_KEY) && l.getBlock().getType().equals(Material.NETHER_PORTAL)) {
                         TextUtil.debugText("Found Block " + block.getType().name());
                         return l.getBlock();
                     }

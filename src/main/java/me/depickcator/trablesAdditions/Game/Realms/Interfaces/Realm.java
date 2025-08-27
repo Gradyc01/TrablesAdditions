@@ -46,6 +46,7 @@ public abstract class Realm implements TrablesMenuActionable {
     public abstract void onStart(RealmController controller);
     public abstract void onLoop(RealmController controller);
     protected abstract RealmStates getStartingRealmState();
+    public abstract void worldRules(World world);
 
     public String getWorldName() {
         return REALM_NAME;

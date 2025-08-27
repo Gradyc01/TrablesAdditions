@@ -10,4 +10,8 @@ public abstract class WitherRealmActions {
         this.controller = controller;
     }
     public abstract boolean start();
+
+    public String getMeshName() {
+        return meshName;
+    }
 }

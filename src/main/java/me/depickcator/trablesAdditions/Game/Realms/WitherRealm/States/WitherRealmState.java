@@ -44,28 +44,7 @@ public abstract class WitherRealmState implements RealmStates {
         }
     }
 
-    private Block treatWaterLogging(PlayerBucketEvent event) {
-        ItemStack bucketResult = event.getItemStack();
-        Block targetBlock = event.getBlock();
-        if (targetBlock.getBlockData() instanceof Waterlogged waterlogged) {
-            Block relative = event.getBlockClicked().getRelative(event.getBlockFace());
-            if (relative.getType() != Material.AIR) {
-                int num = event.getPlayer().getEyeHeight() >= targetBlock.getY() ? 1 : -1;
-                relative = targetBlock.getLocation().clone().add(0, num,0).getBlock();
-            }
-            if (relative.getType() == Material.AIR) {
-                relative.setType(Material.WATER);
-            } else {
-                event.setCancelled(true);
-                return null;
-            }
-            event.setCancelled(true);
-            if (event.getHand() == EquipmentSlot.HAND) event.getPlayer().getInventory().setItemInMainHand(bucketResult);
-            else event.getPlayer().getInventory().setItemInOffHand(bucketResult);
-            return relative;
-        }
-        return targetBlock;
-    }
+
 
     @Override
     public void onMobSpawn(CreatureSpawnEvent event) {
@@ -117,5 +96,28 @@ public abstract class WitherRealmState implements RealmStates {
 
     public WitherRealm getRealm() {
         return realm;
+    }
+
+    private Block treatWaterLogging(PlayerBucketEvent event) {
+        ItemStack bucketResult = event.getItemStack();
+        Block targetBlock = event.getBlock();
+        if (targetBlock.getBlockData() instanceof Waterlogged waterlogged) {
+            Block relative = event.getBlockClicked().getRelative(event.getBlockFace());
+            if (relative.getType() != Material.AIR) {
+                int num = event.getPlayer().getEyeHeight() >= targetBlock.getY() ? 1 : -1;
+                relative = targetBlock.getLocation().clone().add(0, num,0).getBlock();
+            }
+            if (relative.getType() == Material.AIR) {
+                relative.setType(Material.WATER);
+            } else {
+                event.setCancelled(true);
+                return null;
+            }
+            event.setCancelled(true);
+            if (event.getHand() == EquipmentSlot.HAND) event.getPlayer().getInventory().setItemInMainHand(bucketResult);
+            else event.getPlayer().getInventory().setItemInOffHand(bucketResult);
+            return relative;
+        }
+        return targetBlock;
     }
 }

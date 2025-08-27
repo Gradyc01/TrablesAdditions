@@ -30,6 +30,7 @@ public class WitherRealm_LoadRoom extends WitherRealmActions {
                     case 5 -> new WitherRealmEnderman(spawnLoc.getLeft(), random);
                     case 6 -> new WitherRealmRangerSkeleton(spawnLoc.getLeft());
                     case 7 -> new WitherRealmHusk(spawnLoc.getLeft(), random);
+                    case 8 -> new WitherRealmBog(spawnLoc.getLeft(), random);
                 }
             }
             return true;
