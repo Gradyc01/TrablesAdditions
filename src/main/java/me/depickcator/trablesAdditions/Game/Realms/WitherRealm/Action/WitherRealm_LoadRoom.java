@@ -2,9 +2,15 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.*;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Skeletons.WitherRealmBog;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Skeletons.WitherRealmRangerSkeleton;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Skeletons.WitherRealmSkeleton;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Skeletons.WitherRealmSkeletonKnight;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies.WitherRealmHusk;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies.WitherRealmZombie;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies.WitherRealmZombieKnight;
 import me.depickcator.trablesAdditions.Persistence.LocationMesh;
 import me.depickcator.trablesAdditions.Util.TextUtil;
-import net.minecraft.world.entity.EntityType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 

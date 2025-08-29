@@ -2,6 +2,8 @@ package me.depickcator.trablesAdditions.Util;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,9 +21,9 @@ public class ItemComparison {
 
     /* Parses items into an identifiable string and returns the string */
     public static String itemParser(ItemStack item) {
-        int customModelNumber = getItemModelNumber(item);
+        String customModelString = getItemModelString(item);
 
-        if (item.getType().equals(Material.ENCHANTED_BOOK) && !item.getItemMeta().hasCustomModelData()) {
+        if (item.getType().equals(Material.ENCHANTED_BOOK) && !hasItemModelString(item)) {
             StringBuilder str = new StringBuilder();
             EnchantmentStorageMeta meta = (EnchantmentStorageMeta) item.getItemMeta();
             for (Enchantment enchantment : meta.getStoredEnchants().keySet()) {
@@ -31,23 +33,45 @@ public class ItemComparison {
             return item.getType() + str.toString();
         }
 
-        if (item.getType().equals(Material.POTION) && !item.getItemMeta().hasCustomModelData()) {
+        if (item.getType().equals(Material.POTION) && !hasItemModelString(item)) {
             PotionMeta meta = (PotionMeta) item.getItemMeta();
             return item.getType() + meta.getCustomEffects().toString();
         }
 
-        return item.getType().toString() + customModelNumber;
+        return item.getType().name() + customModelString;
     }
 
-    /* Gets the customModelNumber of an item returns 0 if there is none */
-    public static int getItemModelNumber(ItemStack item) {
-        int customModelNumber;
+    /* Gets the customModelString of an item returns "" if there is none */
+    public static String getItemModelString(ItemStack item) {
+        String customModelString;
         ItemMeta meta = item.getItemMeta();
         try {
-            customModelNumber = meta.getCustomModelData();
+            customModelString = meta.getCustomModelDataComponent().getStrings().getFirst();
         } catch (Exception ignored) {
-            customModelNumber = 0;
+            customModelString = "";
         }
-        return customModelNumber;
+        return customModelString;
+    }
+
+    /* Gets the customModelString of an item returns "" if there is none */
+    public static boolean hasItemModelString(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta.hasCustomModelDataComponent()) {
+            //TODO:Could cause future errors
+            return !meta.getCustomModelDataComponent().getStrings().getFirst().isEmpty();
+        }
+        return false;
+    }
+
+    /*Checks to see if Player p is holding ItemStack item in their main hand*/
+    public static boolean isHolding(Player p, ItemStack item) {
+        return ItemComparison.isHoldingIn(p, item, EquipmentSlot.HAND);
+    }
+
+    /*Checks to see if Player p is holding ItemStack item in Equipment Slot equipment slot*/
+    public static boolean isHoldingIn(Player p, ItemStack item, EquipmentSlot equipmentSlot) {
+        ItemStack heldItem = p.getInventory().getItem(equipmentSlot);
+        if (heldItem == null) return false;
+        return ItemComparison.equalItems(heldItem, item);
     }
 }

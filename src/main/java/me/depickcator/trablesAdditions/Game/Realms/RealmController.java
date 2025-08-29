@@ -10,6 +10,7 @@ import me.depickcator.trablesAdditions.Persistence.RealmMeshReader;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -25,12 +26,14 @@ public class RealmController {
     private final RealmMeshReader reader;
     private World expendableWorld;
     private BukkitTask task;
+    private final RealmPlayers realmPlayers;
 
     private static final Map<String, RealmController> realmControllers = new HashMap<>();
     public RealmController(Realm realm) {
         this.realm = realm;
         reader = new RealmMeshReader(realm.getMeshFilePath());
         expendableWorldName = "./worlds/" + realm.getWorldName() + "_" + UUID.randomUUID();
+        realmPlayers = new RealmPlayers(this);
     }
 
     /*Initializes this realm and begin the opening stuff to allow players to enter soon*/
@@ -56,6 +59,7 @@ public class RealmController {
     /*The Realm begins */
     public void startRealm() {
         realm.onStart(this);
+        realmPlayers.solidifyPlayerList(expendableWorld.getPlayers());
         loop();
         TextUtil.debugText("Realm Controller", "Started Realm: " + realm.getWorldName());
     }
@@ -68,6 +72,7 @@ public class RealmController {
             return;
         }
         closePortal();
+        realmPlayers.gameEnded();
         expendableWorld.getPlayers().forEach(player -> {
             player.teleport(realm.getPortalLocation());
         });
@@ -91,6 +96,14 @@ public class RealmController {
 
     public RealmMeshReader getReader() {
         return reader;
+    }
+
+    public RealmPlayers getRealmPlayers() {
+        return realmPlayers;
+    }
+
+    public List<Player> getPlayingPlayers() {
+        return realmPlayers.getPlayers();
     }
 
     //    private void loop() {

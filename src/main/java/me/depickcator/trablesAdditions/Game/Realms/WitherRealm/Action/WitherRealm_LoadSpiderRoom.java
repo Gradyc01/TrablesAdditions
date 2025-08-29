@@ -1,7 +1,8 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.*;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Spider.WitherRealmCaveSpider;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Spider.WitherRealmSpider;
 import me.depickcator.trablesAdditions.Persistence.LocationMesh;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.apache.commons.lang3.tuple.Pair;

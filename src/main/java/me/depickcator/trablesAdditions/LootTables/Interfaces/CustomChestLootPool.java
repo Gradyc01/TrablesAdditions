@@ -78,7 +78,7 @@ public class CustomChestLootPool {
 
             ItemStack itemStack = lootPoolItem.getItem();
             if (changeItemAmount) {
-                itemStack.setAmount(r.nextInt(max - min + min) + 1);
+                itemStack.setAmount(Math.min(r.nextInt(max - min + min) + 1, itemStack.getMaxStackSize()));
             }
             ans.add(itemStack);
 

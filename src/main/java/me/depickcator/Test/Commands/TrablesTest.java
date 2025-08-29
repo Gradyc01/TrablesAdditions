@@ -2,6 +2,9 @@ package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmLaunchGolem;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmMiniGolem;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmSummonGolem;
 import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -16,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Random;
 
 public class TrablesTest extends TrablesCommands {
     public TrablesTest() {
@@ -73,6 +77,12 @@ public class TrablesTest extends TrablesCommands {
                     controller.stopRealm();
                 }
             }
+            case "revive" -> {
+                if (sender instanceof Player player) {
+                    RealmController controller = RealmController.getController(player.getWorld().getName());
+                    controller.getRealmPlayers().attemptToRevive(player);
+                }
+            }
             case "give-kit" -> {
                 if (sender instanceof Player player) {
                     player.getInventory().clear();
@@ -85,13 +95,25 @@ public class TrablesTest extends TrablesCommands {
                     generalKit(player);
                 }
             }
+            case "summon" -> {
+                if (sender instanceof Player player) {
+                    if (args.length > 1) {
+                        switch (args[1]) {
+                            case "1" -> new WitherRealmSummonGolem(player.getLocation(), new Random());
+                            case "2" -> new WitherRealmMiniGolem(player.getLocation(), new Random());
+                            default -> new WitherRealmLaunchGolem(player.getLocation(), new Random());
+                        }
+                    }
+
+                }
+            }
         }
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit");
+        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit", "revive", "summon");
     }
 
     private ItemStack enchantItem(Material material, Enchantment enchant, int level) {
@@ -108,7 +130,7 @@ public class TrablesTest extends TrablesCommands {
                 new ItemStack(Material.WATER_BUCKET),
                 new ItemStack(Material.WATER_BUCKET),
                 new ItemStack(Material.LAVA_BUCKET),
-                new ItemStack(Material.TNT, 64),
+                new ItemStack(Material.TNT, 16),
                 new ItemStack(Material.LAVA_BUCKET),
                 new ItemStack(Material.SHIELD),
                 new ItemStack(Material.SHIELD),
@@ -118,21 +140,11 @@ public class TrablesTest extends TrablesCommands {
     private void kit1(Player player) {
         PlayerUtil.giveItem(player,
                 enchantItem(Material.DIAMOND_SWORD, Enchantment.SHARPNESS, 1),
-                new ItemStack(Material.COOKED_BEEF, 64),
                 enchantItem(Material.BOW, Enchantment.POWER, 1),
-                new ItemStack(Material.GOLDEN_APPLE, 16),
-                new ItemStack(Material.OAK_PLANKS, 64),
-                new ItemStack(Material.WATER_BUCKET),
-                new ItemStack(Material.WATER_BUCKET),
-                new ItemStack(Material.LAVA_BUCKET),
-                new ItemStack(Material.TNT, 64),
-                new ItemStack(Material.LAVA_BUCKET),
                 new ItemStack(Material.IRON_HELMET),
                 new ItemStack(Material.IRON_CHESTPLATE),
                 new ItemStack(Material.IRON_LEGGINGS),
-                new ItemStack(Material.IRON_BOOTS),
-                new ItemStack(Material.SHIELD),
-                new ItemStack(Material.SHIELD));
+                new ItemStack(Material.IRON_BOOTS));
     }
 
     private void kit2(Player player) {

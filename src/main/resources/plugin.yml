@@ -11,5 +11,7 @@ commands:
     permission: trablesAdditions.debugger
   travel:
     permission: trablesAdditions.debugger
+  giveCustomItem:
+    permission: trablesAdditions.debugger
 depend:
   - WorldEdit

@@ -1,10 +1,12 @@
 package me.depickcator.trablesAdditions.Listeners;
 
+import me.depickcator.trablesAdditions.Game.Items.Interfaces.ItemDrop;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesGUI;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,12 +22,12 @@ public class InventoryListener extends TrablesListeners {
         PlayerData pD = PlayerUtil.getPlayerData(player);
         Inventory inventory = e.getInventory();
         Pair<Inventory, TrablesGUI> playerGUI = TrablesGUI.findInventory(player);
-        /*if (playerGUI == null) {
+        if (playerGUI == null) {
             ItemDrop itemDrop = ItemDrop.findDropItem(e.getCursor());
             if (itemDrop != null && e.getCurrentItem() !=null && e.getCurrentItem().getType() != Material.AIR) {
                 itemDrop.uponApply(e, e.getCurrentItem(), e.getCursor(), PlayerUtil.getPlayerData(player));
             }
-        } Commented for future drag and drop use*/
+        }
         if (playerGUI != null && inventory == playerGUI.getLeft()) {
             if (playerGUI.getRight() instanceof TrablesMenuGUI && e.getCurrentItem() == null) return;
             if (!playerGUI.getRight().interactWithGUIButtons(pD, e)) {

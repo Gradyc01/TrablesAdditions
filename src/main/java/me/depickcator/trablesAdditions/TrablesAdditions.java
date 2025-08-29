@@ -1,9 +1,7 @@
 package me.depickcator.trablesAdditions;
 
-import me.depickcator.Test.Commands.CreateWorld;
-import me.depickcator.Test.Commands.Debugger;
-import me.depickcator.Test.Commands.TrablesTest;
-import me.depickcator.Test.Commands.Travel;
+import me.depickcator.Test.Commands.*;
+import me.depickcator.trablesAdditions.Game.Items.CraftData;
 import me.depickcator.trablesAdditions.Game.Mechanics.EntityInteractions;
 import me.depickcator.trablesAdditions.Listeners.*;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class TrablesAdditions extends JavaPlugin {
     private static TrablesAdditions instance;
     private EntityInteractions entityInteractions;
+    private CraftData craftData;
     private TrablesAdditions() {
 
     }
@@ -21,6 +20,8 @@ public final class TrablesAdditions extends JavaPlugin {
         initCommands();
         initListeners();
         entityInteractions = new EntityInteractions();
+        craftData = new CraftData();
+        craftData.initCrafts();
     }
 
     @Override
@@ -34,12 +35,17 @@ public final class TrablesAdditions extends JavaPlugin {
         return instance;
     }
 
+    public CraftData getCraftData() {
+        return craftData;
+    }
+
     private void initCommands() {
-        new Debugger(); new TrablesTest(); new CreateWorld(); new Travel();
+        new Debugger(); new TrablesTest(); new CreateWorld(); new Travel(); new GiveCustomItem();
     }
 
     private void initListeners() {
         new InventoryListener(); new DimensionalTravel(); new BlockChange();
         new EntityDeath(); new MobSpawning(); new PlayerInteractListener();
+        new onDamage();
     }
 }
