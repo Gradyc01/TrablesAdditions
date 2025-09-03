@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
+import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -16,6 +17,7 @@ public class Wither_InGameState extends WitherRealmState{
 
     @Override
     public void onEntityExplode(EntityExplodeEvent event) {
+        TextUtil.debugText("onEntityExplode");
         if (event.getEntity() instanceof TNTPrimed) {
             List<Block> blocks = event.blockList();
             boolean noDoorTriggered = true;
@@ -26,7 +28,8 @@ public class Wither_InGameState extends WitherRealmState{
                     getRealm().triggerDoor(block.getMetadata(WitherRealm.WITHER_REALM_DUNGEON_DOOR_KEY).getFirst().asString());
                 };
             }
-        } else {
+        }
+        else {
             super.onEntityExplode(event);
         }
     }

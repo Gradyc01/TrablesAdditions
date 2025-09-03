@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
+import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -62,6 +63,7 @@ public abstract class WitherRealmState implements RealmStates {
         if (!block.hasMetadata("PLACED")) {
             event.setCancelled(true);
         }
+        block.removeMetadata("PLACED", TrablesAdditions.getInstance());
     }
 
     @Override
@@ -95,10 +97,16 @@ public abstract class WitherRealmState implements RealmStates {
         onBlockExploded(event.blockList());
     }
 
+    @Override
+    public void onSet() {
+        //Do Nothing on purpose
+    }
+
     private void onBlockExploded(List<Block> blockList) {
         for (Block block : new ArrayList<>(blockList)) {
             if (!block.hasMetadata("PLACED")) {
                 blockList.remove(block);
+                block.removeMetadata("PLACED", TrablesAdditions.getInstance());
             }
         }
     }

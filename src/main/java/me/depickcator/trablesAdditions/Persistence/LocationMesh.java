@@ -40,9 +40,36 @@ public class LocationMesh {
     /* Gets a number of locations specified in the count and whether they will be unique
      * Returns a Collection of Locations*/
     public List<Location> getRandomLocationsFromMesh(Random r, int count, boolean uniqueItems) {
+//        int totalWeight = this.totalWeight;
+//        List<Pair<Location, Integer>> locations = new ArrayList<>(this.locations);
+        List<Location> ans = new ArrayList<>();
+//        if (uniqueItems && count > locations.size()) {
+//            throw new IllegalArgumentException("Not enough unique locations to satisfy the count.");
+//        }
+//        for (int i = 0; i < count; i++) {
+//            int weight = r.nextInt(totalWeight);
+//            TextUtil.debugText("Random Weight number is " + weight);
+//            Pair<Location, Integer> pair = getWeightedLocation(locations, weight);
+//            if (pair == null) throw new IllegalArgumentException("Illegal argument too much weight");
+//
+//            Location location = pair.getLeft();
+//            ans.add(location);
+//
+//            if (uniqueItems) {
+//                totalWeight -= pair.getRight(); // Update totalWeight
+//                locations.remove(pair); // Remove selected item to prevent reuse
+//            }
+//        }
+        for (Pair<Location, Integer> pair : getRandomLocationsWeightedFromMesh(r, count, uniqueItems)) {
+            ans.add(pair.getLeft());
+        }
+        return ans;
+    }
+
+    public List<Pair<Location, Integer>> getRandomLocationsWeightedFromMesh(Random r, int count, boolean uniqueItems) {
         int totalWeight = this.totalWeight;
         List<Pair<Location, Integer>> locations = new ArrayList<>(this.locations);
-        List<Location> ans = new ArrayList<>();
+        List<Pair<Location, Integer>> ans = new ArrayList<>();
         if (uniqueItems && count > locations.size()) {
             throw new IllegalArgumentException("Not enough unique locations to satisfy the count.");
         }
@@ -53,7 +80,7 @@ public class LocationMesh {
             if (pair == null) throw new IllegalArgumentException("Illegal argument too much weight");
 
             Location location = pair.getLeft();
-            ans.add(location);
+            ans.add(Pair.of(location, weight));
 
             if (uniqueItems) {
                 totalWeight -= pair.getRight(); // Update totalWeight

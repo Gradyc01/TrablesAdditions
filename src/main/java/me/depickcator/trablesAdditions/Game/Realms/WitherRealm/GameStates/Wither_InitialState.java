@@ -6,6 +6,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
 
 public class Wither_InitialState extends WitherRealmState{
 
@@ -23,6 +24,8 @@ public class Wither_InitialState extends WitherRealmState{
     public void onEntityDeath(EntityDeathEvent event) {event.setCancelled(true);}
     @Override
     public void onEntityExplode(EntityExplodeEvent event) {event.setCancelled(true);}
+    @Override
+    public void onPlayerBucket(PlayerBucketEvent event) {event.setCancelled(true);}
 
     @Override
     public String getStateName() {

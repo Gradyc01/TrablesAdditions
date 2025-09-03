@@ -1,13 +1,16 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
+import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmLaunchGolem;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmMiniGolem;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmSummonGolem;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
 import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -18,10 +21,12 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class TrablesTest extends TrablesCommands {
+    private final List<WitherRealmEndCrystal> crystals = new ArrayList<>();
     public TrablesTest() {
         super(List.of("trables-test"));
     }
@@ -107,6 +112,14 @@ public class TrablesTest extends TrablesCommands {
 
                 }
             }
+            case "start-boss" -> {
+                if (sender instanceof Player player) {
+                    RealmController controller = RealmController.getController(player.getWorld().getName());
+//                    controller.startRealm();
+                    controller.startBossFight();
+                }
+            }
+
         }
         return true;
     }
@@ -134,7 +147,8 @@ public class TrablesTest extends TrablesCommands {
                 new ItemStack(Material.LAVA_BUCKET),
                 new ItemStack(Material.SHIELD),
                 new ItemStack(Material.SHIELD),
-                new ItemStack(Material.ARROW, 64));
+                new ItemStack(Material.ARROW, 64),
+                ReviveStone.getInstance().getResult());
     }
 
     private void kit1(Player player) {

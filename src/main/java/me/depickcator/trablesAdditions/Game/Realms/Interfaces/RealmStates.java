@@ -8,7 +8,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
 
 public interface RealmStates {
@@ -20,5 +19,6 @@ public interface RealmStates {
     void onBlockExplode(BlockExplodeEvent event);
     void onPlayerBucket(PlayerBucketEvent event);
     void onPlayerDeath(PlayerDeathEvent event, RealmController controller);
+    void onSet();
     String getStateName();
 }

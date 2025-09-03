@@ -47,6 +47,8 @@ public abstract class Realm implements TrablesMenuActionable {
     public abstract void onLoop(RealmController controller);
     protected abstract RealmStates getStartingRealmState();
     public abstract void worldRules(World world);
+    public abstract void onStartBoss(RealmController controller);
+    public abstract void onBossDefeated(RealmController controller);
 
     public String getWorldName() {
         return REALM_NAME;
@@ -75,6 +77,7 @@ public abstract class Realm implements TrablesMenuActionable {
     public void setRealmState(RealmStates realmState) {
         TextUtil.debugText("Realm", REALM_NAME + " changed state from " + this.realmState.getStateName() + " to " + realmState.getStateName());
         this.realmState = realmState;
+        this.realmState.onSet();
     }
 
 

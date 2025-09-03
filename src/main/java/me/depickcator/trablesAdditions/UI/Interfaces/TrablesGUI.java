@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -24,10 +25,10 @@ public abstract class TrablesGUI {
     private static final Map<UUID, Pair<Inventory, TrablesGUI>> guiMap = new HashMap<>();
 
     /* Creates a GUI for playerData that is GUI lines tall */
-    public TrablesGUI(PlayerData playerData, int GUILines, Component name) {
+    public TrablesGUI(InventoryHolder holder, int GUILines, Component name) {
         plugin = TrablesAdditions.getInstance();
         GUISize = GUILines * 9;
-        inventory = Bukkit.createInventory(playerData.getPlayer(), GUISize, name);
+        inventory = Bukkit.createInventory(holder, GUISize, name);
     }
 
     /*Opens the GUI for Player player*/

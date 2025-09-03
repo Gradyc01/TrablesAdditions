@@ -23,18 +23,17 @@ public class WitherRealm_LoadDoor extends WitherRealmActions{
             LocationMesh mesh = controller.getReader().getLocationsMesh(meshName, controller.getWorld());
             for (Location location : mesh.getAllLocations()) {
                 Block block = location.getBlock();
-                block.setType(Material.INFESTED_CRACKED_STONE_BRICKS);
-                block.setMetadata(WitherRealm.WITHER_REALM_DUNGEON_DOOR_KEY, new FixedMetadataValue(TrablesAdditions.getInstance(), meshName));
+                changeBlock(block);
             }
             return true;
         } catch (IOException e) {
-            TextUtil.debugText("Wither Realm Load Room", e.getMessage());
+            TextUtil.debugText("Wither Realm Load Door", e.getMessage());
             controller.stopRealm();
             return false;
         }
     }
 
-    private void changeBlock(Block block) {
+    protected void changeBlock(Block block) {
         block.setType(Material.INFESTED_CRACKED_STONE_BRICKS);
         block.setMetadata(WitherRealm.WITHER_REALM_DUNGEON_DOOR_KEY, new FixedMetadataValue(TrablesAdditions.getInstance(), meshName));
     }

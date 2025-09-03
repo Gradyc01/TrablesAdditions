@@ -57,7 +57,7 @@ public class WitherRealmDrowned extends Drowned implements RealmNMSMob {
         super.goalSelector.addGoal(2, new DrownedTridentAttackGoal(this, 1.0, 40, 10));
         super.goalSelector.addGoal(2, new DrownedAttackGoal(this, (double)1.0F, false));
         super.targetSelector.removeAllGoals(goal -> true);
-        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class, Stray.class, Bogged.class)));
+        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class, Stray.class, Bogged.class, Drowned.class)));
         super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.equipment.set(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(WitherRealmDiscipleTrident.getInstance().getResult()));
         this.equipment.set(EquipmentSlot.HEAD, initArmor(Material.LEATHER_HELMET, "Helmet", 2.5));

@@ -14,9 +14,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Skeleton;
-import net.minecraft.world.entity.monster.Stray;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Player;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,7 +40,7 @@ public class WitherRealmZombie extends Zombie implements RealmNMSMob {
         giveAttributes();
         loot = new ArrayList<>(List.of(new ItemStack(Material.ROTTEN_FLESH)));
         super.targetSelector.removeAllGoals(goal -> true);
-        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class, Stray.class)));
+        super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class, Stray.class, Bogged.class, Drowned.class)));
         super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         NMSMobUtil.generateRandomArmor(this.equipment, random);
     }

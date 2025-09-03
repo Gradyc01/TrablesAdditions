@@ -1,16 +1,22 @@
 package me.depickcator.trablesAdditions.Game.Realms;
 
+import io.papermc.paper.math.Rotation;
 import me.depickcator.trablesAdditions.Game.Effects.FloodBlocks;
 import me.depickcator.trablesAdditions.Game.Effects.PortalFrameConverter;
 import me.depickcator.trablesAdditions.Game.Effects.RealmOpeningAnimation;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.SharedEntities.StartNPC.StartingNPC;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.StartBoss.StartBoss;
 import me.depickcator.trablesAdditions.Persistence.RealmMeshReader;
 import me.depickcator.trablesAdditions.TrablesAdditions;
+import me.depickcator.trablesAdditions.Util.DisplayUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -26,11 +32,15 @@ public class RealmController {
     private final RealmMeshReader reader;
     private World expendableWorld;
     private BukkitTask task;
+    private BukkitTask portalLoop;
+    private TextDisplay portalTimeDisplay;
+    private boolean isPortalOpen;
     private final RealmPlayers realmPlayers;
 
     private static final Map<String, RealmController> realmControllers = new HashMap<>();
     public RealmController(Realm realm) {
         this.realm = realm;
+        this.isPortalOpen = false;
         reader = new RealmMeshReader(realm.getMeshFilePath());
         expendableWorldName = "./worlds/" + realm.getWorldName() + "_" + UUID.randomUUID();
         realmPlayers = new RealmPlayers(this);
@@ -46,25 +56,30 @@ public class RealmController {
     /*Opens the portal*/
     public void openPortal() {
         realm.openPortal();
+        isPortalOpen = true;
+        portalLoop();
         new StartingNPC(this);
         new FloodBlocks(realm.getPortalLocation(), 1, new PortalFrameConverter(expendableWorldName)).autoFlood(new Random());
     }
 
     /*Closes the portal*/
-    public void closePortal() {
+    private void closePortal() {
         realm.closePortal();
-        removeController(expendableWorldName);
+        isPortalOpen = false;
+        if (portalTimeDisplay != null) portalTimeDisplay.remove();
+        if (portalLoop != null) portalLoop.cancel();
     }
 
-    /*The Realm begins */
+    /*The Realm begins (Aka. when the players are about to start the game) */
     public void startRealm() {
+        closePortal();
         realm.onStart(this);
         realmPlayers.solidifyPlayerList(expendableWorld.getPlayers());
-        loop();
+        gameLoop();
         TextUtil.debugText("Realm Controller", "Started Realm: " + realm.getWorldName());
     }
 
-    /*The Realm begins */
+    /*The Realm stops */
     public void stopRealm() {
         if (task != null) task.cancel();
         if (expendableWorld == null) {
@@ -84,11 +99,22 @@ public class RealmController {
             }
         }.runTaskLaterAsynchronously(TrablesAdditions.getInstance(), 60 * 20);
         TextUtil.debugText("Realm Controller", "Stopped Realm: " + realm.getWorldName());
+        removeController(expendableWorldName);
+    }
+
+    public void startBossFight() {
+        realm.onStartBoss(this);
+    }
+
+    public void bossDefeated() {
+        realm.onBossDefeated(this);
     }
 
     public RealmStates getRealmState() {
         return realm.getRealmState();
     }
+
+
 
     public World getWorld() {
         return expendableWorld;
@@ -106,35 +132,38 @@ public class RealmController {
         return realmPlayers.getPlayers();
     }
 
-    //    private void loop() {
-//        int seconds = 30;
-//        new BukkitRunnable() {
+    private void portalLoop() {
+        int seconds = 120;
+        portalTimeDisplay = initTextDisplay();
+        portalLoop = new BukkitRunnable() {
 //            TextDisplay textDisplay = initTextDisplay();
-//            int timePassed = 0;
-//            @Override
-//            public void run() {
-//                textDisplay.text(
-//                        TextUtil.makeText(realm.getDisplayName() + " closes in ", TextUtil.GOLD)
-//                                .append(TextUtil.makeText(TextUtil.formatTime(seconds - timePassed), TextUtil.AQUA)));
-//                if (timePassed++ >= seconds) {
-//                    cancel();
-//                    textDisplay.remove();
-//                }
-//            }
-//        }.runTaskTimer(TrablesAdditions.getInstance(), 0, 20);
-//    }
+            int timePassed = 0;
+            @Override
+            public void run() {
+                portalTimeDisplay.text(
+                        TextUtil.makeText(realm.getDisplayName() + " closes in ", TextUtil.GOLD)
+                                .append(TextUtil.makeText(TextUtil.formatTime(seconds - timePassed), TextUtil.AQUA)));
+                checkPortal();
+                if (timePassed++ >= seconds) {
+                    cancel();
+                    portalTimeDisplay.remove();
+                    stopRealm();
+                }
+            }
+        }.runTaskTimer(TrablesAdditions.getInstance(), 0, 20);
+    }
 
-//    private TextDisplay initTextDisplay() {
-//        TextDisplay textDisplay = DisplayUtil.makeTextDisplay(
-//                realm.getPortalLocation().add(2, 1, 0),
-//                List.of(TextUtil.makeText("", TextUtil.GOLD)),
-//                0, 0, 200);
-//        textDisplay.setBillboard(Display.Billboard.CENTER);
-//        textDisplay.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
-//        return textDisplay;
-//    }
+    private TextDisplay initTextDisplay() {
+        TextDisplay textDisplay = DisplayUtil.makeTextDisplay(
+                realm.getPortalLocation().add(2, 1, 0),
+                List.of(TextUtil.makeText("", TextUtil.GOLD)),
+                0, 0, 200);
+        textDisplay.setBillboard(Display.Billboard.CENTER);
+        textDisplay.setBackgroundColor(Color.fromARGB(0, 0, 0, 0));
+        return textDisplay;
+    }
 
-    private void loop() {
+    private void gameLoop() {
         task = new BukkitRunnable() {
             @Override
             public void run() {
@@ -145,11 +174,20 @@ public class RealmController {
 
     public Location getSpawnLocation()  {
         try {
-            return reader.getLocationsMesh("spawn", Bukkit.getWorld(expendableWorldName))
-                    .getRandomLocationsFromMesh(new Random(), 1, true).getFirst();
+            Pair<Location, Integer> pair = reader.getLocationsMesh("spawn", Bukkit.getWorld(expendableWorldName))
+                    .getRandomLocationsWeightedFromMesh(new Random(), 1, true).getFirst();
+            Location loc = pair.getLeft().clone();
+            loc.setRotation(Rotation.rotation((pair.getRight() - 1) * 90, 0));
+            return loc;
         } catch (IOException ex) {
             closePortal();
             return null;
+        }
+    }
+
+    private void checkPortal() {
+        if (realm.getPortalLocation().getBlock().getType() != Material.NETHER_PORTAL) {
+            stopRealm();
         }
     }
 

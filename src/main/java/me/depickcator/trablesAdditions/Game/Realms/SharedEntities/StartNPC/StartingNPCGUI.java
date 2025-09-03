@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.Game.Realms.SharedEntities.StartNPC;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
+import me.depickcator.trablesAdditions.UI.Interfaces.TrablesPlayerMenuGUI;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -16,7 +17,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.List;
 import java.util.Set;
 
-public class StartingNPCGUI extends TrablesMenuGUI {
+public class StartingNPCGUI extends TrablesPlayerMenuGUI {
     private final ItemStack readyButton;
     private final StartingNPC startingNPC;
     public StartingNPCGUI(PlayerData playerData, StartingNPC startingNPC) {

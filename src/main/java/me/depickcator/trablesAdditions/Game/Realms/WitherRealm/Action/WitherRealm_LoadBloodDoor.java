@@ -1,0 +1,41 @@
+package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
+
+import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
+import me.depickcator.trablesAdditions.Persistence.LocationMesh;
+import me.depickcator.trablesAdditions.TrablesAdditions;
+import me.depickcator.trablesAdditions.Util.TextUtil;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.io.IOException;
+
+public class WitherRealm_LoadBloodDoor extends WitherRealm_LoadDoor{
+//    private final Set<WitherRealm_LoadRoom> triggeredRooms; /*The set of roms that would get loaded if this door were to be broken*/
+    public WitherRealm_LoadBloodDoor(String meshName, RealmController controller) {
+        super(meshName, controller);
+    }
+
+    public boolean start() {
+        try {
+            LocationMesh mesh = controller.getReader().getLocationsMesh(meshName, controller.getWorld());
+            for (Location location : mesh.getAllLocations()) {
+                Block block = location.getBlock();
+                changeBlock(block);
+            }
+            return true;
+        } catch (IOException e) {
+            TextUtil.debugText("Wither Realm Load Blood Door", e.getMessage());
+            controller.stopRealm();
+            return false;
+        }
+    }
+
+    protected void changeBlock(Block block) {
+//        super.changeBlock(block);
+        block.setType(Material.INFESTED_CRACKED_STONE_BRICKS);
+        block.setMetadata(WitherRealm.WITHER_REALM_BLOOD_DOOR_KEY, new FixedMetadataValue(TrablesAdditions.getInstance(), meshName));
+    }
+}

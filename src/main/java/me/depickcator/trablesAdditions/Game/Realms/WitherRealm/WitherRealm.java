@@ -5,17 +5,17 @@ import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.*;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.Wither_InGameState;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.Wither_InitialState;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.*;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.StartBoss.StartBoss;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
+import me.depickcator.trablesAdditions.Util.SoundUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -30,10 +30,12 @@ public class WitherRealm extends Realm {
     private final Map<String, Set<WitherRealmActions>> roomMap;
     public static String WITHER_REALM_DUNGEON_DOOR_KEY = "wither_realm_dungeon_door";
     public static String WITHER_REALM_DUNGEON_DISCIPLE_KEY = "wither_realm_disciple";
+    public static String WITHER_REALM_BLOOD_DOOR_KEY = "wither_realm_blood_door";
     private final Set<String> actionsLoaded;
     private final Map<Block, Integer> placedBlocks;
     private final Set<String> bossDisciples;
     private RealmController controller;
+    private Audience audience;
 
     public WitherRealm(Location location) {
         super(location, "TestRealm", "Test Realm");
@@ -41,6 +43,7 @@ public class WitherRealm extends Realm {
         actionsLoaded = new HashSet<>();
         placedBlocks = new HashMap<>();
         bossDisciples = new HashSet<>();
+        audience = Audience.audience(Bukkit.getOnlinePlayers());
     }
 
     @Override
@@ -117,10 +120,27 @@ public class WitherRealm extends Realm {
 
     public void removeDisciple(String meshName) {
         if (bossDisciples.remove(meshName)) {
-            TextUtil.broadcastMessage(
-                    TextUtil.makeText("One of ______ disciples has been eliminated. " + bossDisciples.size() + " remains", TextUtil.AQUA),
-                    controller.getPlayingPlayers());
+            if (bossDisciples.isEmpty()) {
+                audience.sendMessage(TextUtil.makeText("All disciples have been vanquished. The Blood Door can be open", TextUtil.RED));
+                audience.playSound(SoundUtil.makeSound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, 10.0F, 1.0F), Sound.Emitter.self());
+                setRealmState(new Wither_DisciplesGoneState(this));
+            } else {
+                audience.sendMessage(TextUtil.makeText("One of the disciples has been eliminated. " + bossDisciples.size() + " remains", TextUtil.AQUA));
+            }
+
         }
+    }
+
+    @Override
+    public void onStartBoss(RealmController controller) {
+        new StartBoss(controller, this,
+                new Wither_BossState_Phase0(this, controller)).start();
+//        setRealmState(new );
+    }
+
+    @Override
+    public void onBossDefeated(RealmController controller) {
+        setRealmState(new Wither_RewardState(this));
     }
 
     private void loadDoors() {
@@ -146,8 +166,6 @@ public class WitherRealm extends Realm {
                 new WitherRealm_LoadRoom("room_conn_tunnel", controller)));
         addDoor("door_conn_tunnel_outer", Set.of("room_conn_tunnel", "room_3m"), Set.of("chest_3m"), Set.of("boss_3m"));
         addDoor("door_room_grand_from_3m", Set.of("room_3m", "room_grand"), Set.of("chest_3m", "chest_grand"), Set.of("boss_3m", "boss_grand"));
-        addDoor("door_grand_be", Set.of("room_grand", "room_be"), Set.of("chest_grand"), Set.of("boss_grand"));
-        addDoor("door_be_3m", Set.of("room_3m", "room_be"), Set.of("chest_3m"), Set.of("boss_3m"));
         addDoor("door_grand_3r", Set.of("room_grand", "room_3r"), Set.of("chest_grand", "chest_3r"), Set.of("boss_3r", "boss_grand"));
         addDoor("door_b1", Set.of(new WitherRealm_LoadMiniBossRoom("room_b1", controller,this)));
         addDoor("door_grand_chest_door", Set.of(), Set.of());
@@ -156,6 +174,11 @@ public class WitherRealm extends Realm {
         addDoor("door_grand_chest_graveyard", Set.of("room_grand_graveyard"), Set.of());
         addDoor("door_grand_tunnel", Set.of("room_grand_tunnel"), Set.of());
         addDoor("door_grand_tunnel_chest", Set.of(), Set.of());
+        addDoor(new WitherRealm_LoadBloodDoor("door_grand_be", controller),
+                parseActions(Set.of("room_grand", "room_be"), Set.of("chest_grand"), Set.of("boss_grand")));
+        addDoor(new WitherRealm_LoadBloodDoor("door_be_3m", controller),
+                parseActions(Set.of("room_3m", "room_be"), Set.of("chest_3m"), Set.of("boss_3m")));
+        addDoor("door_be_launch", Set.of(new WitherRealm_LoadControlPanel("ui_be_launch", controller)));
     }
 
     private void removeOldBlocks() {
@@ -178,22 +201,33 @@ public class WitherRealm extends Realm {
     }
 
     private void addDoor(String doorMeshName, Set<String> roomMeshNames, Set<String> chestMeshNames, Set<String> discipleMeshNames) {
-        if (controller == null) return;
+        addDoor(doorMeshName, parseActions(roomMeshNames, chestMeshNames, discipleMeshNames));
+    }
+
+    private Set<WitherRealmActions> parseActions(Set<String> roomMeshNames, Set<String> chestMeshNames, Set<String> discipleMeshNames) {
+        if (controller == null) return null;
         Set<WitherRealmActions> actions = new HashSet<>() ;
         for (String roomMeshName : roomMeshNames) actions.add(new WitherRealm_LoadRoom(roomMeshName, controller));
         for (String chestMeshName : chestMeshNames) actions.add(new WitherRealm_FillLoot(chestMeshName, controller, Material.BARREL));
         for (String discipleMeshName : discipleMeshNames) actions.add(new WitherRealm_LoadDisciple(discipleMeshName, controller, this));
-        addDoor(doorMeshName, actions);
+        return actions;
     }
 
     private void addDoor(String doorMeshName, Set<WitherRealmActions> actions) {
-        if (!new WitherRealm_LoadDoor(doorMeshName, controller).start()) return;
+//        if (!new WitherRealm_LoadDoor(doorMeshName, controller).start()) return;
+//        if (controller == null) return;
+//        roomMap.put(doorMeshName, actions);
+        addDoor(new WitherRealm_LoadDoor(doorMeshName, controller), actions);
+    }
+
+    private void addDoor(WitherRealm_LoadDoor door, Set<WitherRealmActions> actions) {
+        if (!door.start()) return;
         if (controller == null) return;
-        roomMap.put(doorMeshName, actions);
+        roomMap.put(door.getMeshName(), actions);
     }
 
     private void startAnimation(RealmController controller) {
-        Audience audience = Audience.audience(controller.getWorld().getPlayers());
+        audience = Audience.audience(controller.getWorld().getPlayers());
         new BukkitRunnable() {
             int seconds = 5;
             @Override
@@ -225,7 +259,10 @@ public class WitherRealm extends Realm {
         world.setGameRule(GameRule.WATER_SOURCE_CONVERSION, false);
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
     }
+
+
 
 
 }
