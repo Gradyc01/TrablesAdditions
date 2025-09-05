@@ -97,8 +97,8 @@ public class RealmOpeningAnimation implements Floodable {
     @Override
     public Map<Material, Integer> getUnFloodables() {
         return Map.of(
-                Material.SOUL_SAND, 20,
-                Material.LAVA, 5,
+                Material.SOUL_SAND, 22,
+                Material.LAVA, 3,
                 Material.NETHERRACK, 75,
                 Material.AIR, 0);
     }

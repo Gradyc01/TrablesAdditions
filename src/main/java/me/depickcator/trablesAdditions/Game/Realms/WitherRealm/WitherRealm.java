@@ -7,6 +7,9 @@ import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.*;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.*;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.StartBoss.StartBoss;
+import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
+import me.depickcator.trablesAdditions.Interfaces.ScoreboardObserver;
+import me.depickcator.trablesAdditions.Scoreboards.WitherRealmBoard;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
 import me.depickcator.trablesAdditions.Util.SoundUtil;
@@ -16,15 +19,17 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Objective;
 
 import java.time.Instant;
 import java.util.*;
 
-public class WitherRealm extends Realm {
+public class WitherRealm extends Realm implements ScoreboardObserver {
 
     /*Takes Door mesh names and pairs them with the rooms that it would load*/
     private final Map<String, Set<WitherRealmActions>> roomMap;
@@ -36,6 +41,7 @@ public class WitherRealm extends Realm {
     private final Set<String> bossDisciples;
     private RealmController controller;
     private Audience audience;
+    private int timeTicks;
 
     public WitherRealm(Location location) {
         super(location, "TestRealm", "Test Realm");
@@ -48,6 +54,7 @@ public class WitherRealm extends Realm {
 
     @Override
     public boolean runAction(PlayerData playerData, TrablesMenuGUI trablesMenuGUI, InventoryClickEvent event) {
+        WitherRealmBoard.getInstance().addObserver(this);
         Player player = playerData.getPlayer();
         Location loc = player.getLocation();
         TextUtil.broadcastMessage(TextUtil.makeText(player.getName() + " has activated WitherRealm it will be placed at"
@@ -83,6 +90,25 @@ public class WitherRealm extends Realm {
     @Override
     public void onLoop(RealmController controller) {
         removeOldBlocks();
+    }
+
+    @Override
+    public void closePortal() {
+        super.closePortal();
+        WitherRealmBoard.getInstance().removeObserver(this);
+    }
+
+    private void timeTick() {
+        timeTicks++;
+        if (timeTicks % 4 == 0) {
+            getBoardMaker().updateAllViewers(this);
+        }
+    }
+
+    @Override
+    public void update(BoardMaker maker, Objective board, PlayerData playerData) {
+        maker.editLine(board, 13, TextUtil.makeText(" Time Elapsed:"));
+        maker.editLine(board, 12, TextUtil.makeText("   " + TextUtil.formatTime(timeTicks/4), TextUtil.AQUA));
     }
 
     public void addPlacedBlock(Block block) {
@@ -121,14 +147,20 @@ public class WitherRealm extends Realm {
     public void removeDisciple(String meshName) {
         if (bossDisciples.remove(meshName)) {
             if (bossDisciples.isEmpty()) {
-                audience.sendMessage(TextUtil.makeText("All disciples have been vanquished. The Blood Door can be open", TextUtil.RED));
+                audience.sendMessage(TextUtil.makeText("All disciples have been vanquished. The Blood Door can be opened", TextUtil.RED));
                 audience.playSound(SoundUtil.makeSound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, 10.0F, 1.0F), Sound.Emitter.self());
                 setRealmState(new Wither_DisciplesGoneState(this));
             } else {
-                audience.sendMessage(TextUtil.makeText("One of the disciples has been eliminated. " + bossDisciples.size() + " remains", TextUtil.AQUA));
+                audience.sendMessage(TextUtil.makeText("One of the disciples has been eliminated. " +
+                        getDisciplesRemaining() + " remains", TextUtil.AQUA));
+                getBoardMaker().updateAllViewers((ScoreboardObserver) getRealmState());
             }
 
         }
+    }
+
+    public int getDisciplesRemaining() {
+        return bossDisciples.size();
     }
 
     @Override
@@ -141,6 +173,13 @@ public class WitherRealm extends Realm {
     @Override
     public void onBossDefeated(RealmController controller) {
         setRealmState(new Wither_RewardState(this));
+        addDoor("door_boss_prize", Set.of());
+        triggerDoor("door_boss_prize");
+    }
+
+    @Override
+    public BoardMaker getBoardMaker() {
+        return WitherRealmBoard.getInstance();
     }
 
     private void loadDoors() {
@@ -261,8 +300,4 @@ public class WitherRealm extends Realm {
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
     }
-
-
-
-
 }

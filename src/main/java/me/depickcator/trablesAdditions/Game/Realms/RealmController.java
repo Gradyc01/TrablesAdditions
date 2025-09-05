@@ -1,16 +1,16 @@
 package me.depickcator.trablesAdditions.Game.Realms;
 
-import io.papermc.paper.math.Rotation;
 import me.depickcator.trablesAdditions.Game.Effects.FloodBlocks;
 import me.depickcator.trablesAdditions.Game.Effects.PortalFrameConverter;
 import me.depickcator.trablesAdditions.Game.Effects.RealmOpeningAnimation;
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.SharedEntities.StartNPC.StartingNPC;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.StartBoss.StartBoss;
 import me.depickcator.trablesAdditions.Persistence.RealmMeshReader;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.DisplayUtil;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
@@ -74,7 +74,7 @@ public class RealmController {
     public void startRealm() {
         closePortal();
         realm.onStart(this);
-        realmPlayers.solidifyPlayerList(expendableWorld.getPlayers());
+//        realmPlayers.solidifyPlayerList(expendableWorld.getPlayers());
         gameLoop();
         TextUtil.debugText("Realm Controller", "Started Realm: " + realm.getWorldName());
     }
@@ -89,7 +89,7 @@ public class RealmController {
         closePortal();
         realmPlayers.gameEnded();
         expendableWorld.getPlayers().forEach(player -> {
-            player.teleport(realm.getPortalLocation());
+            leaveWorld(PlayerUtil.getPlayerData(player), true);
         });
         Bukkit.unloadWorld(expendableWorld, false);
         new BukkitRunnable() {
@@ -113,8 +113,6 @@ public class RealmController {
     public RealmStates getRealmState() {
         return realm.getRealmState();
     }
-
-
 
     public World getWorld() {
         return expendableWorld;
@@ -172,17 +170,30 @@ public class RealmController {
         }.runTaskTimer(TrablesAdditions.getInstance(), 20, 5);
     }
 
-    public Location getSpawnLocation()  {
+    public void joinWorld(PlayerData playerData) {
         try {
+            Player player = playerData.getPlayer();
             Pair<Location, Integer> pair = reader.getLocationsMesh("spawn", Bukkit.getWorld(expendableWorldName))
                     .getRandomLocationsWeightedFromMesh(new Random(), 1, true).getFirst();
             Location loc = pair.getLeft().clone();
-            loc.setRotation(Rotation.rotation((pair.getRight() - 1) * 90, 0));
-            return loc;
+            player.teleport(loc);
+            TextUtil.debugText(pair.getRight() + "");
+            player.setRotation(90 * pair.getRight(), 0);
+            playerData.getPlayerScoreboards().setBoardMaker(realm.getBoardMaker());
+            realmPlayers.addPlayer(playerData);
         } catch (IOException ex) {
             closePortal();
-            return null;
         }
+    }
+
+    private void leaveWorld(PlayerData playerData, boolean teleportOut) {
+        Player player = playerData.getPlayer();
+        if (teleportOut) player.teleport(realm.getPortalLocation());
+        realmPlayers.removePlayer(playerData);
+    }
+
+    public void leaveWorld(PlayerData playerData) {
+        leaveWorld(playerData, false);
     }
 
     private void checkPortal() {

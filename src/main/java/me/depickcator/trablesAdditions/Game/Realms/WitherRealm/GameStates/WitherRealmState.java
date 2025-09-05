@@ -1,13 +1,20 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
+import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
+import me.depickcator.trablesAdditions.Interfaces.ScoreboardObserver;
 import me.depickcator.trablesAdditions.TrablesAdditions;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -18,12 +25,16 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Objective;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class WitherRealmState implements RealmStates {
+public abstract class WitherRealmState implements RealmStates, ScoreboardObserver {
     private final WitherRealm realm;
     public WitherRealmState(WitherRealm realm) {
         this.realm = realm;
@@ -53,8 +64,19 @@ public abstract class WitherRealmState implements RealmStates {
     }
 
     @Override
-    public void onMobSpawn(CreatureSpawnEvent event) {
+    public void onMobSpawn(CreatureSpawnEvent event) {}
 
+    @Override
+    public void onPlayerJoin(PlayerJoinEvent event, RealmController controller) {
+        controller.joinWorld(PlayerUtil.getPlayerData(event.getPlayer()));
+        new PlayerDeathEvent(event.getPlayer(), DamageSource.builder(DamageType.OUT_OF_WORLD).build(),
+                List.of(), 0, 0, TextUtil.makeText(""), false).callEvent();
+//        controller.getRealmPlayers().playerDied(event.getPlayer());
+    }
+
+    @Override
+    public void onPlayerLeave(PlayerQuitEvent event, RealmController controller) {
+        controller.leaveWorld(PlayerUtil.getPlayerData(event.getPlayer()));
     }
 
     @Override
@@ -100,7 +122,29 @@ public abstract class WitherRealmState implements RealmStates {
     @Override
     public void onSet() {
         //Do Nothing on purpose
+        TextUtil.debugText("Set");
+        BoardMaker boardMaker = realm.getBoardMaker();
+        boardMaker.addObserver(this);
+        boardMaker.updateAllViewers(this);
     }
+
+    @Override
+    public void onRemove() {
+        realm.getBoardMaker().removeObserver(this);
+    }
+
+    @Override
+    public void update(BoardMaker maker, Objective board, PlayerData playerData) {
+        Component indent = TextUtil.makeText(" ");
+        maker.editLine(board, 10, indent.append(TextUtil.makeText("Objective: ")));
+        List<Component> objective = getObjectiveName();
+        maker.editLine(board, 9, indent.append(objective.getFirst()));
+        maker.editLine(board, 8, indent.append(objective.size() >= 2 ? objective.get(1) : TextUtil.makeText("")));
+    }
+
+    /*Returns a List of Components that describe the objective name
+    * Only the first two in the list will be used*/
+    public abstract List<Component> getObjectiveName();
 
     private void onBlockExploded(List<Block> blockList) {
         for (Block block : new ArrayList<>(blockList)) {

@@ -80,7 +80,7 @@ public class LocationMesh {
             if (pair == null) throw new IllegalArgumentException("Illegal argument too much weight");
 
             Location location = pair.getLeft();
-            ans.add(Pair.of(location, weight));
+            ans.add(Pair.of(location, pair.getRight()));
 
             if (uniqueItems) {
                 totalWeight -= pair.getRight(); // Update totalWeight

@@ -15,12 +15,12 @@ public class Wither_BossState_Phase1 extends Wither_BossState {
 
     @Override
     public void onSet() {
+        super.onSet();
         getBossFight().getWither().startPhaseOne();
     }
 
     @Override
     public boolean canOpenPanel() {
-        TextUtil.debugText("y");
         return true;
     }
 

@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
+import net.kyori.adventure.text.Component;
 import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -35,6 +36,11 @@ public class Wither_DisciplesGoneState extends Wither_InGameState {
             super.onEntityExplode(event);
         }
 
+    }
+
+    @Override
+    public List<Component> getObjectiveName() {
+        return super.getObjectiveName();
     }
 
     @Override

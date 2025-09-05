@@ -2,12 +2,11 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.UI;
 
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
-import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockGUI;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealmBossFight;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockMenuGUI;
 import me.depickcator.trablesAdditions.Util.SoundUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
-import org.bukkit.Location;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -16,51 +15,21 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class WitherRealmControlPanelGUI extends TrablesBlockMenuGUI {
-    private int passKeys;
-    private final ItemStack correctButton;
-    private final ItemStack wrongButton;
-    private final Random random;
-    private final RealmController controller;
-    private final List<Location> beamPoints;
-    private final Location centerPoint;
-    private final List<WitherRealmEndCrystal> crystals;
-
-    public WitherRealmControlPanelGUI(Block block, RealmController controller, Location centerPoint, List<Location> beamPoints) {
-        super(block, 6, TextUtil.makeText("Initiate Launch", TextUtil.AQUA), false);
-        this.controller = controller;
-        this.beamPoints = beamPoints;
-        this.crystals = new ArrayList<>();
-        this.centerPoint = centerPoint;
-        passKeys = 0;
+public abstract class WitherRealmControlPanelGUI extends TrablesBlockMenuGUI {
+    protected int passKeys;
+    protected final ItemStack correctButton;
+    protected final ItemStack wrongButton;
+    protected final Random random;
+    public WitherRealmControlPanelGUI(Block block, Component name) {
+        super(block, 6, name, true);
+        this.passKeys = 0;
         correctButton = initCorrectButton();
         wrongButton = initWrongButton();
         random = new Random();
-        resetPassKey();
         generateNextPassKey();
-    }
-
-    private void resetPassKey() {
-        for (WitherRealmEndCrystal crystal : new ArrayList<>(crystals)) {
-            crystal.ignite();
-            crystals.remove(crystal);
-        }
-        for (Location beamPoint : beamPoints) {
-            new WitherRealmEndCrystal(beamPoint, centerPoint, crystals);
-        }
-    }
-
-    private void generateNextPassKey() {
-        passKeys++;
-        setBackground();
-        for (int i = 0; i < passKeys; i++) {
-            inventory.setItem(random.nextInt(0, 54), wrongButton);
-        }
-        inventory.setItem(random.nextInt(0, 54), correctButton);
     }
 
     private ItemStack initWrongButton() {
@@ -73,8 +42,12 @@ public class WitherRealmControlPanelGUI extends TrablesBlockMenuGUI {
 
     @Override
     public boolean interactWithBlock(PlayerData playerData, Block block, PlayerInteractEvent event) {
+        TextUtil.debugText("Interacting with Block", " Is Right Click " + event.getAction().isRightClick());
+        TextUtil.debugText("Interacting with Block", " Is Empty " + inventory.getViewers().isEmpty());
         if (event.getAction().isRightClick() && inventory.getViewers().isEmpty()) {
+            TextUtil.debugText("Interacting with Block", " Opening");
             open(playerData.getPlayer());
+            return true;
         }
         return true;
     }
@@ -85,9 +58,9 @@ public class WitherRealmControlPanelGUI extends TrablesBlockMenuGUI {
         Player p = playerData.getPlayer();
         ItemStack item = event.getCurrentItem();
         if (item.equals(correctButton)) {
-            if (!crystals.isEmpty()) crystals.removeFirst().ignite();
+            onClickCorrectButton(playerData);
 
-            if (passKeys >= beamPoints.size()) {
+            if (hasReachSuccessfulCompletion()) {
                 successfullyCompleted();
                 SoundUtil.playHighPitchPling(p);
                 return true;
@@ -103,9 +76,17 @@ public class WitherRealmControlPanelGUI extends TrablesBlockMenuGUI {
         return true;
     }
 
-    protected void successfullyCompleted() {
-        inventory.close();
-        controller.startBossFight();
-        TrablesBlockGUI.removeGUI(this);
+    protected abstract void onClickCorrectButton(PlayerData playerData);
+    protected abstract boolean hasReachSuccessfulCompletion();
+    protected abstract void resetPassKey();
+    protected abstract void successfullyCompleted();
+
+    private void generateNextPassKey() {
+        passKeys++;
+        setBackground();
+        for (int i = 0; i < passKeys; i++) {
+            inventory.setItem(random.nextInt(0, 54), wrongButton);
+        }
+        inventory.setItem(random.nextInt(0, 54), correctButton);
     }
 }

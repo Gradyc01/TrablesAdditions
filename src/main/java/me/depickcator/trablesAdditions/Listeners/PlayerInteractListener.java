@@ -72,9 +72,8 @@ public class PlayerInteractListener extends TrablesListeners {
         if (e.getClickedBlock() == null || e.getClickedBlock().getType() == Material.AIR) return false;
         Block b = e.getClickedBlock();
         BlockUI gui = TrablesBlockGUI.findGUI(b);
-        TextUtil.debugText("Does Block " + b.getType() + " have a Inventory");
+//        TextUtil.debugText("Does Block " + b.getType() + " have a Inventory");
         if (gui != null) {
-            TextUtil.debugText("Block " + b.getType() + " has inventory");
 //            if (gui.interactWithBlock(pD, b, e)) e.setCancelled(true);
             e.setCancelled(!gui.interactWithBlock(pD, b, e));
             return true;

@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Items;
 
+import me.depickcator.trablesAdditions.Game.Items.Crafts.MinerBlessing;
 import me.depickcator.trablesAdditions.Game.Items.Crafts.QuickPick;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.Craft;
 import me.depickcator.trablesAdditions.TrablesAdditions;
@@ -41,5 +42,6 @@ public class CraftData {
 
     public void initCrafts() {
         QuickPick.getInstance();
+        MinerBlessing.getInstance();
     }
 }

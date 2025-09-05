@@ -42,6 +42,7 @@ public class Wither_BossState_Phase0 extends Wither_BossState {
 
     @Override
     public void onSet() {
+        super.onSet();
         RealmMeshReader reader = getController().getReader();
         try {
             Location loc = spawnWither(reader.getLocationsMesh("room_boss_spawn", getController().getWorld()));
@@ -57,7 +58,6 @@ public class Wither_BossState_Phase0 extends Wither_BossState {
 
     @Override
     public boolean canOpenPanel() {
-        TextUtil.debugText("Fuck");
         return false;
     }
 

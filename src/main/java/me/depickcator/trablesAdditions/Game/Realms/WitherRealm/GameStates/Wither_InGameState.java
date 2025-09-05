@@ -2,6 +2,7 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -32,6 +33,14 @@ public class Wither_InGameState extends WitherRealmState{
         else {
             super.onEntityExplode(event);
         }
+    }
+
+    @Override
+    public List<Component> getObjectiveName() {
+        return List.of(
+                TextUtil.makeText("Defeat Krivon's Disciples", TextUtil.YELLOW),
+                TextUtil.makeText("      " + getRealm().getDisciplesRemaining() + " Remain", TextUtil.YELLOW)
+        );
     }
 
     @Override

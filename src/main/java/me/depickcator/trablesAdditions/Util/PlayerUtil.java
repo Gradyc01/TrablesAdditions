@@ -31,19 +31,34 @@ public class PlayerUtil {
     }
 
     public static PlayerData getPlayerData(Player p) {
+        return Objects.requireNonNull(getPlayerData(p, false));
+    }
+
+    public static PlayerData getPlayerData(Player p, boolean nullable) {
         if (playerDataMap.containsKey(p.getUniqueId())) {
             return playerDataMap.get(p.getUniqueId());
         }
-        TextUtil.debugText("PlayerUtil", "Player Data not found! Creating new one...");
-        return assignNewPlayerData(p);
+        if (nullable) {
+            TextUtil.debugText("PlayerUtil", "Player Data not found! Returning null...");
+            return null;
+        } else {
+            TextUtil.debugText("PlayerUtil", "Player Data not found! Creating new one...");
+            return assignNewPlayerData(p);
+        }
     }
 
     public static boolean removePlayerData(Player p) {
         if (playerDataMap.containsKey(p.getUniqueId())) {
+            PlayerData playerData = playerDataMap.get(p.getUniqueId());
+            playerData.saveData();
             playerDataMap.remove(p.getUniqueId());
             return true;
         }
         return false;
+    }
+
+    public static Collection<PlayerData> getAllPlayerData() {
+        return playerDataMap.values();
     }
 
     public static void giveItem(Player p, ItemStack... items) {

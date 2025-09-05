@@ -2,7 +2,9 @@ package me.depickcator.trablesAdditions.Game.Realms.Interfaces;
 
 import me.depickcator.trablesAdditions.Game.Effects.FloodBlocks;
 import me.depickcator.trablesAdditions.Game.Effects.PortalFrameRemover;
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuActionable;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import me.depickcator.trablesAdditions.Util.WorldEditUtil;
@@ -23,7 +25,8 @@ public abstract class Realm implements TrablesMenuActionable {
         this.portalLocation = portalLocation;
         this.REALM_NAME = realmName;
         this.DISPLAY_NAME = displayName;
-        this.realmState = getStartingRealmState();
+//        this.realmState = getStartingRealmState();
+        setRealmState(getStartingRealmState());
     }
 
     public void openPortal() {
@@ -49,6 +52,7 @@ public abstract class Realm implements TrablesMenuActionable {
     public abstract void worldRules(World world);
     public abstract void onStartBoss(RealmController controller);
     public abstract void onBossDefeated(RealmController controller);
+    public abstract BoardMaker getBoardMaker();
 
     public String getWorldName() {
         return REALM_NAME;
@@ -75,7 +79,11 @@ public abstract class Realm implements TrablesMenuActionable {
     }
 
     public void setRealmState(RealmStates realmState) {
-        TextUtil.debugText("Realm", REALM_NAME + " changed state from " + this.realmState.getStateName() + " to " + realmState.getStateName());
+        if (this.realmState != null) this.realmState.onRemove();
+        TextUtil.debugText("Realm", REALM_NAME + " changed state from " +
+                ((this.realmState != null) ?  this.realmState.getStateName() : "None")
+                + " to " + realmState.getStateName());
+
         this.realmState = realmState;
         this.realmState.onSet();
     }

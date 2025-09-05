@@ -3,14 +3,10 @@ package me.depickcator.Test.Commands;
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmLaunchGolem;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmMiniGolem;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmSummonGolem;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
 import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -23,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class TrablesTest extends TrablesCommands {
     private final List<WitherRealmEndCrystal> crystals = new ArrayList<>();
@@ -100,18 +95,6 @@ public class TrablesTest extends TrablesCommands {
                     generalKit(player);
                 }
             }
-            case "summon" -> {
-                if (sender instanceof Player player) {
-                    if (args.length > 1) {
-                        switch (args[1]) {
-                            case "1" -> new WitherRealmSummonGolem(player.getLocation(), new Random());
-                            case "2" -> new WitherRealmMiniGolem(player.getLocation(), new Random());
-                            default -> new WitherRealmLaunchGolem(player.getLocation(), new Random());
-                        }
-                    }
-
-                }
-            }
             case "start-boss" -> {
                 if (sender instanceof Player player) {
                     RealmController controller = RealmController.getController(player.getWorld().getName());
@@ -126,7 +109,7 @@ public class TrablesTest extends TrablesCommands {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit", "revive", "summon");
+        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit", "revive", "start-boss");
     }
 
     private ItemStack enchantItem(Material material, Enchantment enchant, int level) {

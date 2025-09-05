@@ -5,6 +5,7 @@ import me.depickcator.trablesAdditions.UI.Interfaces.TrablesGUI;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
+import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class InventoryListener extends TrablesListeners {
         if (playerGUI == null) {
             ItemDrop itemDrop = ItemDrop.findDropItem(e.getCursor());
             if (itemDrop != null && e.getCurrentItem() !=null && e.getCurrentItem().getType() != Material.AIR) {
-                itemDrop.uponApply(e, e.getCurrentItem(), e.getCursor(), PlayerUtil.getPlayerData(player));
+                itemDrop.uponApply(e, e.getCurrentItem(), e.getCursor(), pD);
             }
         }
         if (playerGUI != null && inventory == playerGUI.getLeft()) {
@@ -42,9 +43,9 @@ public class InventoryListener extends TrablesListeners {
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         Pair<Inventory, TrablesGUI> gui = TrablesGUI.findInventory(player);
-        PlayerData playerData = PlayerUtil.getPlayerData(player);
+        PlayerData playerData = PlayerUtil.getPlayerData(player, true);
         if (playerData == null) return;
-        if (gui == null || gui.getRight().runWhenCloseGUI(PlayerUtil.getPlayerData(player), event)) {
+        if (gui == null || gui.getRight().runWhenCloseGUI(playerData, event)) {
             TrablesGUI.removeGUI(player);
         }
     }

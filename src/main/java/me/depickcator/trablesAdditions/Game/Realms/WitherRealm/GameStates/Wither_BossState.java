@@ -4,7 +4,10 @@ import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealmBossFight;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.event.player.PlayerBucketEvent;
+
+import java.util.List;
 
 public abstract class Wither_BossState extends WitherRealmState {
     private final WitherRealmBossFight bossFight;
@@ -32,5 +35,12 @@ public abstract class Wither_BossState extends WitherRealmState {
     public abstract boolean canOpenPanel();
 
     public abstract void setNextBossState();
+
+    @Override
+    public List<Component> getObjectiveName() {
+        return List.of(
+                TextUtil.makeText("Defeat Krivon")
+        );
+    }
 
 }

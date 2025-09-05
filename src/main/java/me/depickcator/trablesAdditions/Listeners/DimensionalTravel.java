@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Listeners;
 
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,12 +24,14 @@ public class DimensionalTravel extends TrablesListeners {
             RealmController controller = RealmController.getController(worldString);
             if (controller != null) {
                 event.setCanCreatePortal(false);
-                Location teleportLocation = controller.getSpawnLocation();
-                if (teleportLocation == null) event.setCancelled(true);
-                else {
-                    event.setTo(teleportLocation);
-                    player.teleport(teleportLocation);
-                }
+//                Location teleportLocation = controller.getSpawnLocation();
+//                if (teleportLocation == null) event.setCancelled(true);
+//                else {
+//                    event.setTo(teleportLocation);
+//                    player.teleport(teleportLocation);
+//                }
+                controller.joinWorld(PlayerUtil.getPlayerData(player));
+                event.setCancelled(true);
 
             }
         }

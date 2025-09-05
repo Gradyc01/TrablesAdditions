@@ -46,6 +46,6 @@ public final class TrablesAdditions extends JavaPlugin {
     private void initListeners() {
         new InventoryListener(); new DimensionalTravel(); new BlockChange();
         new EntityDeath(); new MobSpawning(); new PlayerInteractListener();
-        new onDamage();
+        new onDamage(); new PlayerJoinLeave();
     }
 }

@@ -1,6 +1,7 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
+import me.depickcator.trablesAdditions.Game.Items.Crafts.MinerBlessing;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.Craft;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.RepairKit;
@@ -88,6 +89,6 @@ public class GiveCustomItem extends TrablesCommands {
 
     private List<CustomItem> getAllCustomItems() {
 //        List<> allCraft = plugin.getCraftData();
-        return List.of(RepairKit.getInstance(), ReviveStone.getInstance());
+        return List.of(RepairKit.getInstance(), ReviveStone.getInstance(), MinerBlessing.getInstance());
     }
 }

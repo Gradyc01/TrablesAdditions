@@ -2,7 +2,9 @@ package me.depickcator.trablesAdditions.Game.Realms;
 
 
 import me.depickcator.trablesAdditions.Game.Effects.RevivePlayerInRealm;
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.GameOver.GameOver;
+import me.depickcator.trablesAdditions.Scoreboards.DefaultBoard;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -24,6 +26,18 @@ public class RealmPlayers {
     public void solidifyPlayerList(List<Player> players) {
         this.players.clear();
         players.forEach(player -> this.players.put(player, true));
+    }
+
+    public void addPlayer(PlayerData playerData) {
+        this.players.put(playerData.getPlayer(), true);
+    }
+
+    public void removePlayer(PlayerData playerData) {
+        if (this.players.containsKey(playerData.getPlayer())) {
+            this.players.remove(playerData.getPlayer());
+            this.deadPlayers.remove(playerData.getPlayer());
+            playerData.getPlayerScoreboards().setBoardMaker(DefaultBoard.getInstance());
+        }
     }
 
     public void playerDied(Player player) {

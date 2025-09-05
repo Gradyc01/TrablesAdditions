@@ -44,12 +44,11 @@ public class Wither_BossState_Phase2 extends Wither_BossState {
 
     @Override
     public void onSet() {
-
+        super.onSet();
     }
 
     @Override
     public boolean canOpenPanel() {
-        TextUtil.debugText("a");
         return false;
     }
 
