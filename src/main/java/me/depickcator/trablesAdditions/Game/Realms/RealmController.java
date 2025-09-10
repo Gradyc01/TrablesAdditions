@@ -91,6 +91,7 @@ public class RealmController {
         expendableWorld.getPlayers().forEach(player -> {
             leaveWorld(PlayerUtil.getPlayerData(player), true);
         });
+        realm.onEnd(this);
         Bukkit.unloadWorld(expendableWorld, false);
         new BukkitRunnable() {
             @Override

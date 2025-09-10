@@ -6,6 +6,7 @@ import me.depickcator.trablesAdditions.TrablesAdditions;
 import net.kyori.adventure.key.Key;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 
 import java.util.ArrayList;
@@ -14,19 +15,15 @@ import java.util.List;
 public abstract class CustomItem {
     private final String DISPLAY_NAME;
     private final String KEY;
-    private ItemStack result;
+    protected ItemStack result;
     protected final TrablesAdditions plugin;
+
     public CustomItem(String displayName, String key) {
         this.DISPLAY_NAME = displayName;
         this.KEY = key;
         plugin = TrablesAdditions.getInstance();
         result = initResult();
     }
-
-//    public CustomItem(String displayName, String key, boolean dontGenerateResult) {
-//        this.DISPLAY_NAME = displayName;
-//        this.KEY = key;
-//    }
 
     /*Initialize the Custom Item Result and Returns the ItemStack*/
     protected abstract ItemStack initResult();
@@ -39,6 +36,13 @@ public abstract class CustomItem {
 
     protected void addCooldownGroup(ItemStack item) {
         addCooldownGroup(item, 0.01f);
+    }
+
+
+    protected void addUnrepairable(ItemStack item) {
+        Repairable meta = (Repairable) item.getItemMeta();
+        meta.setRepairCost(999);
+        item.setItemMeta(meta);
     }
 
     /*Generates a unique model number for ItemStack item*/
@@ -54,7 +58,7 @@ public abstract class CustomItem {
     protected void setModelString(ItemStack item, String modelString) {
         ItemMeta meta = item.getItemMeta();
         CustomModelDataComponent component = meta.getCustomModelDataComponent();
-        component.setStrings(new ArrayList<>(List.of(KEY)));
+        component.setStrings(new ArrayList<>(List.of(modelString)));
         meta.setCustomModelDataComponent(component);
         item.setItemMeta(meta);
     }

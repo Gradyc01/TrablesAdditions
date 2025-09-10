@@ -51,12 +51,12 @@ public class PlayerScoreboards {
         Objective health = scoreboard.registerNewObjective(
                 "health_" + displaySlot.name(),
                 Criteria.HEALTH,
-                TextUtil.makeText("♡", TextUtil.RED, true, false)
+                TextUtil.makeText("❤", TextUtil.RED, true, false)
         );
         health.setRenderType(RenderType.INTEGER);
         health.setDisplaySlot(displaySlot);
         return health;
-        //❤
+        //❤♡
     }
 
     public BoardMaker getBoard() {
@@ -69,4 +69,4 @@ public class PlayerScoreboards {
         this.boardMaker = board;
         this.boardMaker.initialize(this.board, playerData);
     }
-    }
+}

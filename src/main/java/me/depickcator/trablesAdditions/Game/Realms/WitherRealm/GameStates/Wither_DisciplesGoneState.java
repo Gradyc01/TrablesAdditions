@@ -1,10 +1,14 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
+import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
+import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.scoreboard.Objective;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +42,13 @@ public class Wither_DisciplesGoneState extends Wither_InGameState {
 
     }
 
+
+
     @Override
     public List<Component> getObjectiveName() {
-        return super.getObjectiveName();
+        return List.of(
+                TextUtil.makeText("Enter Blood Room", TextUtil.YELLOW)
+        );
     }
 
     @Override

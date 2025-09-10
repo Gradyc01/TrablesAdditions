@@ -11,12 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class TrablesBlockGUI extends TrablesGUI implements BlockUI {
-    private final String KEY;
     private final static Map<Block, BlockUI> GUIMAP = new HashMap<>();
     private final Block block;
-    public TrablesBlockGUI(Block block, String key, int GUILines, Component name) {
+    public TrablesBlockGUI(Block block, int GUILines, Component name) {
         super(null, GUILines, name);
-        this.KEY = key;
         this.block = block;
         TrablesBlockGUI.registerGUI(this);
     }

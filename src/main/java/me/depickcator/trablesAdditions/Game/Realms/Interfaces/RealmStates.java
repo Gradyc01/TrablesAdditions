@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -23,8 +24,10 @@ public interface RealmStates {
     void onPlayerDeath(PlayerDeathEvent event, RealmController controller);
     void onPlayerJoin(PlayerJoinEvent event, RealmController controller);
     void onPlayerLeave(PlayerQuitEvent event, RealmController controller);
+    boolean onPlayerInteract(PlayerInteractEvent event, RealmController controller);
     void onSet();
     void onRemove();
+    boolean shouldProgressTime();
     String getStateName();
 
 }

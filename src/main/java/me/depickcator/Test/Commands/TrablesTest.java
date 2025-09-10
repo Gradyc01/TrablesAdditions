@@ -3,6 +3,7 @@ package me.depickcator.Test.Commands;
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.ItemDisplay;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
 import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
@@ -102,6 +103,11 @@ public class TrablesTest extends TrablesCommands {
                     controller.startBossFight();
                 }
             }
+            case "summon" -> {
+                if (sender instanceof Player player) {
+                    summon(player, args.length > 1 ? args[1] : "0");
+                }
+            }
 
         }
         return true;
@@ -109,7 +115,14 @@ public class TrablesTest extends TrablesCommands {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit", "revive", "start-boss");
+        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit", "revive", "start-boss", "summon");
+    }
+
+    private void summon(Player player, String string) {
+        switch (string) {
+            case "2" -> {}
+            default -> new ItemDisplay(player.getLocation().add(4, 4, 4), ReviveStone.getInstance().getResult());
+        }
     }
 
     private ItemStack enchantItem(Material material, Enchantment enchant, int level) {
@@ -137,7 +150,9 @@ public class TrablesTest extends TrablesCommands {
     private void kit1(Player player) {
         PlayerUtil.giveItem(player,
                 enchantItem(Material.DIAMOND_SWORD, Enchantment.SHARPNESS, 1),
+                enchantItem(Material.DIAMOND_AXE, Enchantment.SHARPNESS, 1),
                 enchantItem(Material.BOW, Enchantment.POWER, 1),
+                enchantItem(Material.CROSSBOW, Enchantment.QUICK_CHARGE, 1),
                 new ItemStack(Material.IRON_HELMET),
                 new ItemStack(Material.IRON_CHESTPLATE),
                 new ItemStack(Material.IRON_LEGGINGS),
@@ -147,6 +162,8 @@ public class TrablesTest extends TrablesCommands {
     private void kit2(Player player) {
         PlayerUtil.giveItem(player,
                 enchantItem(Material.DIAMOND_SWORD, Enchantment.SHARPNESS, 3),
+                enchantItem(Material.DIAMOND_AXE, Enchantment.SHARPNESS, 3),
+                enchantItem(Material.CROSSBOW, Enchantment.QUICK_CHARGE, 2),
                 enchantItem(Material.BOW, Enchantment.POWER, 3),
                 enchantItem(Material.IRON_HELMET, Enchantment.PROTECTION, 1),
                 enchantItem(Material.IRON_CHESTPLATE, Enchantment.PROTECTION, 2),
@@ -157,6 +174,8 @@ public class TrablesTest extends TrablesCommands {
     private void kit3(Player player) {
         PlayerUtil.giveItem(player,
                 enchantItem(Material.DIAMOND_SWORD, Enchantment.SHARPNESS, 3),
+                enchantItem(Material.DIAMOND_AXE, Enchantment.SHARPNESS, 3),
+                enchantItem(Material.CROSSBOW, Enchantment.QUICK_CHARGE, 2),
                 enchantItem(Material.BOW, Enchantment.POWER, 3),
                 enchantItem(Material.DIAMOND_HELMET, Enchantment.PROTECTION, 2),
                 enchantItem(Material.DIAMOND_CHESTPLATE, Enchantment.PROTECTION, 2),

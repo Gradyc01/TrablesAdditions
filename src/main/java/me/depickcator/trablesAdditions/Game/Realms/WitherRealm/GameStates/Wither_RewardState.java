@@ -35,6 +35,11 @@ public class Wither_RewardState extends WitherRealmState{
     }
 
     @Override
+    public boolean shouldProgressTime() {
+        return false;
+    }
+
+    @Override
     public void onPlayerBucket(PlayerBucketEvent event) {event.setCancelled(true);}
 
     @Override

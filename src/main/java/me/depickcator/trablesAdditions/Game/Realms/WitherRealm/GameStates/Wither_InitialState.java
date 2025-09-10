@@ -38,8 +38,13 @@ public class Wither_InitialState extends WitherRealmState{
     @Override
     public List<Component> getObjectiveName() {
         return List.of(
-                TextUtil.makeText(" Defeat Krivon's Disciples", TextUtil.YELLOW)
+                TextUtil.makeText(" Enter Realm", TextUtil.YELLOW)
         );
+    }
+
+    @Override
+    public boolean shouldProgressTime() {
+        return false;
     }
 
     @Override

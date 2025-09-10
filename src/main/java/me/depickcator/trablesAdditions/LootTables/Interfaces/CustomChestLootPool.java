@@ -72,7 +72,7 @@ public class CustomChestLootPool {
         }
         for (int i = 0; i < count; i++) {
             int weight = r.nextInt(totalWeight);
-            TextUtil.debugText("Random Weight number is " + weight);
+//            TextUtil.debugText("Random Weight number is " + weight);
             LootPoolItem lootPoolItem = getWeightedItem(items, weight);
             if (lootPoolItem == null) throw new IllegalArgumentException("Illegal argument too much weight");
 
@@ -101,7 +101,7 @@ public class CustomChestLootPool {
             indexWeight += item.getWeight();
             debugString += indexWeight + " --> ";
             if (indexWeight > weight) {
-                TextUtil.debugText(debugString + "Item is " + item.getItem().getType().name());
+//                TextUtil.debugText(debugString + "Item is " + item.getItem().getType().name());
                 return item;
             }
         }

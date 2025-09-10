@@ -1,5 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies;
 
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Weapons.ReaperScythe;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.ZombieHeart;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.NMSMobUtil;
@@ -57,6 +59,11 @@ public class WitherRealmZombieKnight extends Zombie implements RealmNMSMob {
     }
 
     @Override
+    protected void dropFromLootTable(ServerLevel level, DamageSource damageSource, boolean playerKill) {
+        NMSMobUtil.attemptToDropItemStack(ZombieHeart.getInstance().getResult(), damageSource, this, 0.05);
+    }
+
+    @Override
     public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
         boolean bool = super.hurtServer(level, damageSource, amount);
         this.setCustomName(NMSMobUtil.generateHealthText(name, this));
@@ -65,10 +72,9 @@ public class WitherRealmZombieKnight extends Zombie implements RealmNMSMob {
 
 
     private ItemStack initSword() {
-        ItemStack item = new ItemStack(Material.DIAMOND_HOE);
+        ItemStack item = ReaperScythe.getInstance().getResult();
         Damageable meta = (Damageable) item.getItemMeta();
-        meta.customName(TextUtil.makeText("zombie Knight's Sword", TextUtil.YELLOW));
-        meta.addEnchant(Enchantment.SHARPNESS, 6, true);
+        meta.addEnchant(Enchantment.SHARPNESS, 3, true);
         meta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(
                 new NamespacedKey(TrablesAdditions.getInstance(), "zombie_knight_sword")
                 , 1, AttributeModifier.Operation.ADD_NUMBER));

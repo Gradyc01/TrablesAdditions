@@ -1,11 +1,11 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
-import me.depickcator.trablesAdditions.Game.Items.Crafts.MinerBlessing;
-import me.depickcator.trablesAdditions.Game.Items.Interfaces.Craft;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.RepairKit;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.*;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Weapons.IronStaff;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -19,7 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class GiveCustomItem extends TrablesCommands {
     private final TrablesAdditions plugin;
@@ -34,7 +36,7 @@ public class GiveCustomItem extends TrablesCommands {
         Player p = ((Player) commandSender).getPlayer();
         if (p == null || strings.length == 0 || strings.length > 3) return false;
 
-        List<CustomItem> allItems = getAllCustomItems();
+        Collection<CustomItem> allItems = getAllCustomItems();
         if (strings[0].equals("help")) {
             Component text = TextUtil.makeText("  All Item strings: ", TextUtil.GRAY);
             for (CustomItem i : allItems) {
@@ -44,10 +46,17 @@ public class GiveCustomItem extends TrablesCommands {
             return true;
         }
 
+        List<Player> players = new ArrayList<>();
+
         String name = strings[1];
-        if (Bukkit.getPlayer(strings[0]) != null) {
-            p = Bukkit.getPlayer(strings[0]);
+        if (strings[0].equals("@a")) {
+            players.addAll(Bukkit.getOnlinePlayers());
+        } else if (strings[0].equals("@s")) {
+            players.add(p);
+        } else {
+            if (Bukkit.getPlayer(strings[0]) != null) players.add(Bukkit.getPlayer(strings[0]));
         }
+
         for (CustomItem customItem : allItems) {
             if (customItem.getKey().equals(name)) {
                 ItemStack item = customItem.getResult();
@@ -58,7 +67,9 @@ public class GiveCustomItem extends TrablesCommands {
 //                    return true;
 //                }
                 for (int i = 0; i < count; i++) {
-                    PlayerUtil.giveItem(p, item);
+                    for (Player player : players) {
+                        PlayerUtil.giveItem(player, item);
+                    }
                 }
                 p.sendMessage(TextUtil.makeText("Item Found!", TextUtil.DARK_GREEN));
                 return true;
@@ -87,8 +98,15 @@ public class GiveCustomItem extends TrablesCommands {
         return arr;
     }
 
-    private List<CustomItem> getAllCustomItems() {
-//        List<> allCraft = plugin.getCraftData();
-        return List.of(RepairKit.getInstance(), ReviveStone.getInstance(), MinerBlessing.getInstance());
+    private Collection<CustomItem> getAllCustomItems() {
+        Collection<CustomItem> allItems = new ArrayList<>();
+        allItems.addAll(plugin.getCraftData().getAllCrafts());
+        allItems.addAll(List.of(ReviveStone.getInstance(), RepairKit.getInstance()));
+        allItems.addAll(Set.of(CompactTNT.getInstance(), CupidEssence.getInstance(),
+                KrivonHandle.getInstance(), OceanCore.getInstance(),
+                ReinforcedPlating.getInstance(), ShatteredQuiver.getInstance(),
+                SpiderSilk.getInstance(), ThunderCore.getInstance(), ZombieHeart.getInstance(),
+                IronStaff.getInstance()));
+        return allItems;
     }
 }

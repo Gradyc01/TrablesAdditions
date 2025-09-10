@@ -1,6 +1,9 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies;
 
-import me.depickcator.trablesAdditions.Game.Items.Uncraftable.WitherRealmDiscipleTrident;
+import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.OceanCore;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.ThunderCore;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Mob.WitherRealmDiscipleTrident;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.NMSMobUtil;
@@ -64,6 +67,7 @@ public class WitherRealmDrowned extends Drowned implements RealmNMSMob {
         this.equipment.set(EquipmentSlot.CHEST, initArmor(Material.LEATHER_CHESTPLATE, "Chestplate", 2.5));
         this.equipment.set(EquipmentSlot.LEGS, initArmor(Material.LEATHER_LEGGINGS, "Leggings", 2.5));
         this.equipment.set(EquipmentSlot.FEET, initArmor(Material.LEATHER_BOOTS, "Boots", 2.5));
+        this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
 
     }
 
@@ -74,10 +78,9 @@ public class WitherRealmDrowned extends Drowned implements RealmNMSMob {
                 this.spawnAtLocation(level, CraftItemStack.asNMSCopy(stack));
             }
         }
-    }
-
-    @Override
-    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        NMSMobUtil.attemptToDropItemStack(ReviveStone.getInstance().getResult(), damageSource,this, 1.0);
+        NMSMobUtil.attemptToDropItemStack(OceanCore.getInstance().getResult(), damageSource, this, 0.075);
+        NMSMobUtil.attemptToDropItemStack(ThunderCore.getInstance().getResult(), damageSource, this, 0.075);
     }
 
     @Override
@@ -111,7 +114,7 @@ public class WitherRealmDrowned extends Drowned implements RealmNMSMob {
         meta.addAttributeModifier(Attribute.KNOCKBACK_RESISTANCE,
                 new AttributeModifier(new NamespacedKey(TrablesAdditions.getInstance(), "heavy_disciple_knockback_" + name),
                         0.05, AttributeModifier.Operation.ADD_NUMBER));
-        meta.setMaxDamage(1000);
+        meta.setMaxDamage(700);
         meta.setEnchantmentGlintOverride(true);
         item.setItemMeta(meta);
         LeatherArmorMeta meta1 = (LeatherArmorMeta) item.getItemMeta();

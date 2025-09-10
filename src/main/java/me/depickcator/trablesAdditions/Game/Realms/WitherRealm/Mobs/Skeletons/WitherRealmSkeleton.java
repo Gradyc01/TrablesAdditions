@@ -76,6 +76,9 @@ public class WitherRealmSkeleton extends Skeleton implements RealmNMSMob {
         if (random.nextDouble() < 0.10) meta.addEnchant(Enchantment.PUNCH, 2, true);
         meta.setEnchantmentGlintOverride(false);
         bow.setItemMeta(meta);
+        ItemMeta meta2 = bow.getItemMeta();
+        if (meta2.hasEnchant(Enchantment.FLAME) || meta2.hasEnchant(Enchantment.PUNCH)) meta2.setEnchantmentGlintOverride(true);
+        bow.setItemMeta(meta2);
         return bow;
     }
 

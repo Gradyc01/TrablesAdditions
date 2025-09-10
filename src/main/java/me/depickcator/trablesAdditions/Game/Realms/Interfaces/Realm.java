@@ -26,7 +26,7 @@ public abstract class Realm implements TrablesMenuActionable {
         this.REALM_NAME = realmName;
         this.DISPLAY_NAME = displayName;
 //        this.realmState = getStartingRealmState();
-        setRealmState(getStartingRealmState());
+
     }
 
     public void openPortal() {
@@ -48,6 +48,7 @@ public abstract class Realm implements TrablesMenuActionable {
 
     public abstract void onStart(RealmController controller);
     public abstract void onLoop(RealmController controller);
+    public abstract void onEnd(RealmController controller);
     protected abstract RealmStates getStartingRealmState();
     public abstract void worldRules(World world);
     public abstract void onStartBoss(RealmController controller);

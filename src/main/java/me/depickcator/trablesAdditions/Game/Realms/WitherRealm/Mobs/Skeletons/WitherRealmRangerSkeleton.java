@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Skeletons;
 
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.CupidEssence;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmFireball;
 import me.depickcator.trablesAdditions.Util.NMSMobUtil;
@@ -77,6 +78,10 @@ public class WitherRealmRangerSkeleton extends Stray implements RealmNMSMob {
         return bool;
     }
 
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        NMSMobUtil.attemptToDropItemStack(CupidEssence.getInstance().getResult(), damageSource, this, 0.1);
+    }
 
     private ItemStack initBow() {
         ItemStack bow = new ItemStack(Material.BOW);

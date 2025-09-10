@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 public abstract class Craft extends CustomItem {
-    private final Recipe recipe;
+    protected Recipe recipe;
 
     protected Craft(String displayName, String key) {
         this(displayName, key, false);
@@ -16,9 +16,8 @@ public abstract class Craft extends CustomItem {
     protected Craft(String displayName, String key, boolean removeVanillaRecipe) {
         super(displayName, key);
         if (removeVanillaRecipe) removeVanillaRecipe();
-        recipe = initRecipe();
+        this.recipe = initRecipe();
         plugin.getCraftData().registerCraft(this);
-//        plugin.getServer().addRecipe(recipe);
     }
 
     /*Can have a certain affect when upon Crafted*/

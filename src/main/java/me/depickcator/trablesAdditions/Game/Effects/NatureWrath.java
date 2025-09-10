@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Effects;
 
+import me.depickcator.trablesAdditions.Game.Effects.Interfaces.ImmuneToEffects;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -8,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
@@ -26,8 +28,9 @@ public class NatureWrath {
         this.entity = entity;
         this.isAPlayer = entity instanceof Player;
         if (this.isAPlayer) {this.player = (Player) entity;}
-        world = this.player.getWorld();
+        world = this.entity.getWorld();
         this.seconds = seconds;
+        if (((CraftLivingEntity) entity).getHandle() instanceof ImmuneToEffects) return;
         start();
     }
 
@@ -67,7 +70,7 @@ public class NatureWrath {
                     player.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 2.0f);
                 }
 
-                entity.setHealth(Double.max(0.1, player.getHealth() - 2.5));
+                entity.setHealth(Double.max(0.1, entity.getHealth() - 2.5));
                 world.strikeLightningEffect(loc);
                 world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
                 world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 0.0F);

@@ -54,7 +54,7 @@ public abstract class BoardMaker {
 
     public boolean addObserver(ScoreboardObserver observer) {
         if (observers.add(observer)) {
-            TextUtil.debugText("Board Observer", " added another observer " + observers.size());
+            TextUtil.debugText("Board Observer " + getBoardName(), " added another observer " + observer.observerName() + "     " + observers.size());
             return true;
         }
         return false;

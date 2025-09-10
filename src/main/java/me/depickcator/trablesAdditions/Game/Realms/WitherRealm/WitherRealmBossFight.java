@@ -45,6 +45,7 @@ public class WitherRealmBossFight {
     }
 
     public void spawnMobWave() {
+        if (mobWaves.isEmpty()) return;
         List<WitherRealmActions> wave = mobWaves.removeFirst();
         for (WitherRealmActions action : wave) {
             action.start();

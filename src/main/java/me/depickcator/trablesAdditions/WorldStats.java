@@ -40,4 +40,9 @@ public class WorldStats implements ScoreboardObserver {
     public void update(BoardMaker maker, Objective board, PlayerData playerData) {
 
     }
+
+    @Override
+    public String observerName() {
+        return "WorldStats";
+    }
 }

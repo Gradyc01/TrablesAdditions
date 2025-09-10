@@ -2,6 +2,9 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot;
 
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.RepairKit;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.CompactTNT;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.ReinforcedPlating;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.ShatteredQuiver;
 import me.depickcator.trablesAdditions.LootTables.Interfaces.CustomChestLoot;
 import me.depickcator.trablesAdditions.LootTables.Interfaces.CustomChestLootPool;
 import me.depickcator.trablesAdditions.LootTables.Interfaces.LootPoolItem;
@@ -23,6 +26,8 @@ public abstract class WitherRealmLoot extends CustomChestLoot {
         this.commonLootPool = initCommonLootPool();
     }
 
+    public abstract String getTierName();
+
     private CustomChestLootPool initCommonLootPool() {
         return new CustomChestLootPool(
                 new LootPoolItem(new ItemStack(Material.LEATHER), 15),
@@ -43,8 +48,16 @@ public abstract class WitherRealmLoot extends CustomChestLoot {
                 new LootPoolItem(new ItemStack(Material.IRON_CHESTPLATE), 1),
                 new LootPoolItem(new ItemStack(Material.IRON_LEGGINGS), 1),
                 new LootPoolItem(new ItemStack(Material.IRON_BOOTS), 1),
-                new LootPoolItem(new ItemStack(Material.COOKED_BEEF), 12),
-                new LootPoolItem(new ItemStack(Material.OAK_PLANKS), 15),
+                new LootPoolItem(CompactTNT.getInstance().getResult(), 2),
+                new LootPoolItem(RepairKit.getInstance().getResult(), 2),
+                new LootPoolItem(new ItemStack(Material.COOKED_BEEF), 20),
+                new LootPoolItem(new ItemStack(Material.COOKED_PORKCHOP), 10),
+                new LootPoolItem(new ItemStack(Material.COOKED_COD), 10),
+                new LootPoolItem(new ItemStack(Material.OAK_PLANKS), 10),
+                new LootPoolItem(new ItemStack(Material.SPRUCE_PLANKS), 10),
+                new LootPoolItem(new ItemStack(Material.DARK_OAK_PLANKS), 10),
+                new LootPoolItem(new ItemStack(Material.BIRCH_PLANKS), 10),
+                new LootPoolItem(new ItemStack(Material.JUNGLE_PLANKS), 10),
                 new LootPoolItem(new ItemStack(Material.CARROT), 10)
         );
     }
@@ -61,23 +74,26 @@ public abstract class WitherRealmLoot extends CustomChestLoot {
         pool.addLootPoolItem(addEnchantedBooks(Enchantment.SHARPNESS, 1, 3, 3, 3));
         pool.addLootPoolItem(addEnchantedBooks(Enchantment.POWER, 1, 3, 3, 3));
 
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.PROJECTILE_PROTECTION, 1, 3, 7, 5));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.KNOCKBACK, 1, 3, 7, 5));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.BANE_OF_ARTHROPODS, 1, 3, 7, 5));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.SMITE, 1, 3, 7, 5));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.PROJECTILE_PROTECTION, 1, 3, 5, 5));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.KNOCKBACK, 1, 3, 5, 5));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.BANE_OF_ARTHROPODS, 1, 3, 5, 5));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.SMITE, 1, 3, 5, 5));
 
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.AQUA_AFFINITY, 1, 1, 10, 3));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.RESPIRATION, 1, 3, 10, 3));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.BLAST_PROTECTION, 1, 3, 10, 3));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.FIRE_PROTECTION, 1, 3, 10, 3));
-        pool.addLootPoolItem(addEnchantedBooks(Enchantment.EFFICIENCY, 1, 3, 10, 3));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.AQUA_AFFINITY, 1, 1, 5, 3));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.RESPIRATION, 1, 3, 5, 3));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.BLAST_PROTECTION, 1, 3, 5, 3));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.FIRE_PROTECTION, 1, 3, 5, 3));
+        pool.addLootPoolItem(addEnchantedBooks(Enchantment.EFFICIENCY, 1, 3, 5, 3));
         return pool;
     }
 
     protected CustomChestLootPool initRareLootPool(Random r) {
         CustomChestLootPool pool = new CustomChestLootPool(
-                new LootPoolItem(RepairKit.getInstance().getResult(), 14), //14
-                new LootPoolItem(ReviveStone.getInstance().getResult(), 10) //10
+                new LootPoolItem(RepairKit.getInstance().getResult(), 15), //15
+                new LootPoolItem(ReviveStone.getInstance().getResult(), 12), //12
+                new LootPoolItem(ReinforcedPlating.getInstance().getResult(), 4),//4
+                new LootPoolItem(ShatteredQuiver.getInstance().getResult(), 4), //4
+                new LootPoolItem(CompactTNT.getInstance().getResult(), 4) //4
         );
         pool.generateItems(Material.GOLDEN_APPLE, 1, 3, 1, 4); //12
         pool.generateItems(Material.ARROW, 8, 4, 8, 5); //20
@@ -88,7 +104,7 @@ public abstract class WitherRealmLoot extends CustomChestLoot {
         return pool;
     }
 
-    private ItemStack getEnchantedBook(Enchantment enchantment, int level) {
+    protected ItemStack getEnchantedBook(Enchantment enchantment, int level) {
         ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
         EnchantmentStorageMeta meta = (EnchantmentStorageMeta) book.getItemMeta();
         meta.addStoredEnchant(enchantment, level, true);
@@ -96,7 +112,7 @@ public abstract class WitherRealmLoot extends CustomChestLoot {
         return book;
     }
 
-    private List<LootPoolItem> addEnchantedBooks(Enchantment enchant, int minLvl, int maxLvl,
+    protected List<LootPoolItem> addEnchantedBooks(Enchantment enchant, int minLvl, int maxLvl,
                                                  int startWeight, int weightInc) {
         List<LootPoolItem> items = new ArrayList<>();
         int weight = startWeight;

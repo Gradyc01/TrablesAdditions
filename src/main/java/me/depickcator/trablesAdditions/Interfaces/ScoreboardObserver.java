@@ -5,4 +5,5 @@ import org.bukkit.scoreboard.Objective;
 
 public interface ScoreboardObserver {
     void update(BoardMaker maker, Objective board, PlayerData playerData);
+    String observerName();
 }

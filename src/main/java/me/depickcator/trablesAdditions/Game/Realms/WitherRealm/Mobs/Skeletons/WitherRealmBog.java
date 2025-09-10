@@ -77,6 +77,9 @@ public class WitherRealmBog extends Bogged implements RealmNMSMob {
         if (random.nextDouble() < 0.10) meta.addEnchant(Enchantment.PUNCH, 4, true);
         meta.setEnchantmentGlintOverride(false);
         bow.setItemMeta(meta);
+        ItemMeta meta1 = bow.getItemMeta();
+        if (meta1.hasEnchant(Enchantment.FLAME) || meta1.hasEnchant(Enchantment.PUNCH)) meta1.setEnchantmentGlintOverride(true);
+        bow.setItemMeta(meta1);
         return bow;
     }
 

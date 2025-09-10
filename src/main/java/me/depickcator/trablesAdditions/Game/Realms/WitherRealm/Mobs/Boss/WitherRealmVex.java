@@ -22,6 +22,8 @@ import java.util.Random;
 
 public class WitherRealmVex extends Vex implements RealmNMSMob {
     private final WitherRealmWither wither;
+    private int lifeTicks;
+    private final int ticksBeforeDespawn = 20 * 20;
     public WitherRealmVex(Location location, Random random, WitherRealmWither wither) {
         super(EntityType.VEX, ((CraftWorld) location.getWorld()).getHandle());
         this.setPosRaw(location.getX() + random.nextInt(-5, 6),
@@ -36,6 +38,8 @@ public class WitherRealmVex extends Vex implements RealmNMSMob {
     @Override
     public void aiStep() {
         if (!wither.isAlive()) {
+            this.remove(RemovalReason.DISCARDED);
+        } else if (this.isAlive() && lifeTicks++ >= ticksBeforeDespawn) {
             this.remove(RemovalReason.DISCARDED);
         } else {
             super.aiStep();

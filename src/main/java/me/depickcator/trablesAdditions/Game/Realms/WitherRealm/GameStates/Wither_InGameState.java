@@ -38,8 +38,8 @@ public class Wither_InGameState extends WitherRealmState{
     @Override
     public List<Component> getObjectiveName() {
         return List.of(
-                TextUtil.makeText("Defeat Krivon's Disciples", TextUtil.YELLOW),
-                TextUtil.makeText("      " + getRealm().getDisciplesRemaining() + " Remain", TextUtil.YELLOW)
+                TextUtil.makeText("Defeat Krivon's ", TextUtil.YELLOW),
+                TextUtil.makeText("Disciples " + getRealm().getDisciplesRemaining() + " Left", TextUtil.YELLOW)
         );
     }
 

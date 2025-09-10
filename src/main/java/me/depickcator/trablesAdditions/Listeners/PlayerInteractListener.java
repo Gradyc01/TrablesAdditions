@@ -27,12 +27,19 @@ public class PlayerInteractListener extends TrablesListeners {
     @EventHandler
     public void onItemClick(PlayerInteractEvent e) {
         Player p = e.getPlayer();
+        RealmController controller = RealmController.getController(p.getWorld().getName());
+        if (controller != null) {
+            if (!controller.getRealmState().onPlayerInteract(e, controller)) {
+                return;
+            }
+        }
+
         PlayerData pD = PlayerUtil.getPlayerData(p);
         boolean blockHasInventory = blockHasInventory(e, pD);
         if (e.getItem() == null) return;
         ItemClick itemClick = ItemClick.findClickItem(e.getItem());
         if (itemClick != null && pD != null && !blockHasInventory) {
-            itemClick.uponClick(e, pD);
+            e.setCancelled(!itemClick.uponClick(e, pD));
         }
     }
 

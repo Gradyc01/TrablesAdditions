@@ -156,6 +156,10 @@ public class TextUtil {
         return TextUtil.makeText(" [Click]", TextUtil.GRAY);
     }
 
+    public static Component placeText() {
+        return TextUtil.makeText(" [Place]", TextUtil.GRAY);
+    }
+
     public static void debugText(String text) {
         if (Debugger.getDebuggerState()) {
             new BukkitRunnable() {

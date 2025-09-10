@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies;
 
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.ZombieHeart;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.Util.NMSMobUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -52,10 +53,7 @@ public class WitherRealmZombie extends Zombie implements RealmNMSMob {
                 this.spawnAtLocation(level, CraftItemStack.asNMSCopy(stack));
             }
         }
-    }
-
-    @Override
-    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        NMSMobUtil.attemptToDropItemStack(ZombieHeart.getInstance().getResult(),  damageSource,this, 0.005);
     }
 
     @Override

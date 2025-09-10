@@ -1,5 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Spider;
 
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.CupidEssence;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.SpiderSilk;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.Util.NMSMobUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -62,6 +64,12 @@ public class WitherRealmCaveSpider extends CaveSpider implements RealmNMSMob {
             return false;
         }
     }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        NMSMobUtil.attemptToDropItemStack(SpiderSilk.getInstance().getResult(), damageSource, this, 0.15);
+    }
+
 
     @Override
     public Component getMobName() {

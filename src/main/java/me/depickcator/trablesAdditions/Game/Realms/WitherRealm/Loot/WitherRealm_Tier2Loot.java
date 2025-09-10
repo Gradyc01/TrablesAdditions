@@ -22,6 +22,11 @@ public class WitherRealm_Tier2Loot extends WitherRealmLoot {
     }
 
     @Override
+    public String getTierName() {
+        return "Rare";
+    }
+
+    @Override
     public Collection<ItemStack> populateLoot(Inventory inv, Random r, double luck) {
         Collection<ItemStack> items = new ArrayList<>();
         items.addAll(placeInInventory(inv, r, new ArrayList<>(commonLootPool.getRandomItemFromList(r, 17, 1, 2))));

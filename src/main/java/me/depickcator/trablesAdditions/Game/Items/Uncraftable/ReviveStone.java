@@ -60,7 +60,7 @@ public class ReviveStone extends CustomItem implements ItemClick {
         if (ItemComparison.isHolding(p, getResult()) && controller.getRealmPlayers().attemptToRevive(p)) {
             ItemStack item = p.getInventory().getItemInMainHand();
             item.setAmount(item.getAmount() - 1);
-            return true;
+            return false;
         }
         return false;
     }

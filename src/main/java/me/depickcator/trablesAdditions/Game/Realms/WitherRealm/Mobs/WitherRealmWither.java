@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 
+import me.depickcator.trablesAdditions.Game.Effects.Interfaces.ImmuneToEffects;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Boss.WitherRealmVex;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Boss.WitherRealmWitherSkeleton;
@@ -15,7 +16,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -30,7 +34,7 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Random;
 
-public class WitherRealmWither extends WitherBoss implements RealmNMSMob {
+public class WitherRealmWither extends WitherBoss implements RealmNMSMob, ImmuneToEffects {
     private final Random random;
     private int BOSS_PHASE;
     private final WitherRealmBossFight bossFight;
@@ -57,12 +61,13 @@ public class WitherRealmWither extends WitherBoss implements RealmNMSMob {
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(phase3Health * 2);
         this.setHealth(this.getMaxHealth());
         phase2Damage = (float) phase3Health / (float) phase2Health;
-//        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(500);
-//        this.setHealth(500);
+        this.targetSelector.removeAllGoals(goal -> true);
+        super.targetSelector.addGoal(1, new HurtByTargetGoal(this, Vex.class));
+        super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
     }
 
     public WitherRealmWither (Location location, WitherRealmBossFight bossFight) {
-        this(location, bossFight, 600, 150);
+        this(location, bossFight, 675, 75);
     }
 
     public Location getLocation() {
@@ -114,6 +119,7 @@ public class WitherRealmWither extends WitherBoss implements RealmNMSMob {
         if (BOSS_PHASE == 0) return false;
         float newAmount = this.isPowered() ? amount : amount * phase2Damage;
         boolean bool = super.hurtServer(level, damageSource, newAmount);
+        if (damageSource.getDirectEntity() == null) return bool;
         TextUtil.debugText("Damage Source for Wither Boss", "damageSource: " + damageSource.getDirectEntity().getName());
         if (damageSource.getDirectEntity().getBukkitEntity() instanceof Fireball fireball) {
             if (fireball.getScoreboardTags().contains("soft_stun_fireball")) {
@@ -254,7 +260,7 @@ public class WitherRealmWither extends WitherBoss implements RealmNMSMob {
     }
 
     private void vexAttack() {
-        for (int i = 0; i<20; i++) {
+        for (int i = 0; i<15; i++) {
             new WitherRealmVex(this.getLocation(), random, this);
         }
         getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_VEX_CHARGE, 20.0F, 0.0F);

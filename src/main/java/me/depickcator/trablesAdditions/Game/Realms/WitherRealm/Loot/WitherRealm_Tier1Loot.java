@@ -11,6 +11,10 @@ public class WitherRealm_Tier1Loot extends WitherRealmLoot {
     public WitherRealm_Tier1Loot() {
     }
 
+    @Override
+    public String getTierName() {
+        return "Common";
+    }
 
 
     @Override

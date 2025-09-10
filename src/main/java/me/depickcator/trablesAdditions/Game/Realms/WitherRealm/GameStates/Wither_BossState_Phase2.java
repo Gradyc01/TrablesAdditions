@@ -5,6 +5,7 @@ import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealmBossFight;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -55,6 +56,13 @@ public class Wither_BossState_Phase2 extends Wither_BossState {
     @Override
     public void setNextBossState() {
 
+    }
+
+    @Override
+    public List<Component> getObjectiveName() {
+        return List.of(
+                TextUtil.makeText("Eliminate Krivon")
+        );
     }
 
     @Override

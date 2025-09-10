@@ -1,6 +1,9 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses;
 
 import me.depickcator.trablesAdditions.Game.Effects.GolemLaunch;
+import me.depickcator.trablesAdditions.Game.Effects.Interfaces.ImmuneToEffects;
+import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Weapons.IronStaff;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.Util.NMSMobUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -27,7 +30,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import java.util.List;
 import java.util.Random;
 
-public abstract class WitherRealmGolem extends IronGolem implements RealmNMSMob {
+public abstract class WitherRealmGolem extends IronGolem implements RealmNMSMob, ImmuneToEffects {
     protected final Random random;
     private final Component name;
     private double healthThreshold;
@@ -69,6 +72,12 @@ public abstract class WitherRealmGolem extends IronGolem implements RealmNMSMob 
             healthThreshold -= random.nextDouble(0.20, 0.30);
             launchAttack();
         }
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+        NMSMobUtil.attemptToDropItemStack(IronStaff.getInstance().getResult(), damageSource, this, 0.65);
+        NMSMobUtil.attemptToDropItemStack(ReviveStone.getInstance().getResult(), damageSource, this, 1);
     }
 
     private void launchAttack() {

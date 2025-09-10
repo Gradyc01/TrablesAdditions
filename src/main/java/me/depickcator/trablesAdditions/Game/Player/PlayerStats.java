@@ -57,5 +57,8 @@ public class PlayerStats implements ScoreboardObserver {
         WitherRealmBoard.getInstance().removeObserver(this);
     }
 
-
+    @Override
+    public String observerName() {
+        return "PlayerStats: " + player.getName();
+    }
 }

@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -33,9 +34,13 @@ import org.bukkit.scoreboard.Objective;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public abstract class WitherRealmState implements RealmStates, ScoreboardObserver {
     private final WitherRealm realm;
+    private final Set<CreatureSpawnEvent.SpawnReason> reasons = Set.of(
+            CreatureSpawnEvent.SpawnReason.BUILD_WITHER, CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM,
+            CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
     public WitherRealmState(WitherRealm realm) {
         this.realm = realm;
     }
@@ -64,7 +69,11 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
     }
 
     @Override
-    public void onMobSpawn(CreatureSpawnEvent event) {}
+    public void onMobSpawn(CreatureSpawnEvent event) {
+        if (reasons.contains(event.getSpawnReason()) || event.getEntityType().getKey().getKey().toLowerCase().contains("boat")) {
+            event.setCancelled(true);
+        }
+    }
 
     @Override
     public void onPlayerJoin(PlayerJoinEvent event, RealmController controller) {
@@ -120,12 +129,27 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
     }
 
     @Override
+    public boolean onPlayerInteract(PlayerInteractEvent event, RealmController controller) {
+        if (event.getItem() != null && event.getItem().getType().name().toLowerCase().contains("boat")
+                && event.getAction().isRightClick()) {
+            event.setCancelled(true);
+            return false;
+        };
+        return true;
+    }
+
+    @Override
     public void onSet() {
         //Do Nothing on purpose
         TextUtil.debugText("Set");
         BoardMaker boardMaker = realm.getBoardMaker();
         boardMaker.addObserver(this);
         boardMaker.updateAllViewers(this);
+    }
+
+    @Override
+    public boolean shouldProgressTime() {
+        return true;
     }
 
     @Override
@@ -180,5 +204,10 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
             return relative;
         }
         return targetBlock;
+    }
+
+    @Override
+    public String observerName() {
+        return "WitherRealmState: " + getStateName();
     }
 }
