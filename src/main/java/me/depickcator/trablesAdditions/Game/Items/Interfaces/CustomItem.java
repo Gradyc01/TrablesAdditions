@@ -45,6 +45,16 @@ public abstract class CustomItem {
         item.setItemMeta(meta);
     }
 
+    protected void stackSize(ItemStack item, int size) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setMaxStackSize(size);
+        item.setItemMeta(meta);
+    }
+
+    protected void singleStack(ItemStack item) {
+        stackSize(item, 1);
+    }
+
     /*Generates a unique model number for ItemStack item*/
     protected void generateUniqueModelString(ItemStack item) {
         ItemMeta meta = item.getItemMeta();

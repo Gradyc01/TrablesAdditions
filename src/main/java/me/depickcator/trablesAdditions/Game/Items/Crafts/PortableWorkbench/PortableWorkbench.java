@@ -2,7 +2,6 @@ package me.depickcator.trablesAdditions.Game.Items.Crafts.PortableWorkbench;
 
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.Craft;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ItemClick;
-import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.CupidEssence;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Util.ItemUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -30,14 +29,14 @@ public class PortableWorkbench extends Craft implements ItemClick {
 
     private PortableWorkbench() {
         super("Portable Workbench", "portable_workbench");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     @Override
     protected Recipe initRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, getKey()), result);
         recipe.shape("BCB", "BAB", "BBB");
-        recipe.setIngredient('A', CupidEssence.getInstance().getResult());
+        recipe.setIngredient('A', Material.CRAFTING_TABLE);
         recipe.setIngredient('B', Material.IRON_INGOT);
         recipe.setIngredient('C', Material.REDSTONE_TORCH);
         return recipe;
@@ -52,6 +51,7 @@ public class PortableWorkbench extends Craft implements ItemClick {
                         TextUtil.makeText("that can be used on the go", TextUtil.DARK_PURPLE)));
         ItemMeta meta = item.getItemMeta();
         meta.setMaxStackSize(1);
+        item.setItemMeta(meta);
         CRAFTING_KEY.setKeyOnItem(item, true);
         addUnrepairable(item);
         generateUniqueModelString(item);

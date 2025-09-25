@@ -8,10 +8,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerBucketEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
 public interface RealmStates {
     void onMobSpawn(CreatureSpawnEvent event);
@@ -25,6 +22,7 @@ public interface RealmStates {
     void onPlayerJoin(PlayerJoinEvent event, RealmController controller);
     void onPlayerLeave(PlayerQuitEvent event, RealmController controller);
     boolean onPlayerInteract(PlayerInteractEvent event, RealmController controller);
+    boolean onDimensionalTravel(PlayerPortalEvent event, RealmController controller);
     void onSet();
     void onRemove();
     boolean shouldProgressTime();

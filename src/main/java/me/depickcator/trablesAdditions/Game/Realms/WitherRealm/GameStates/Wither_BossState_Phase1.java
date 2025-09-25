@@ -35,7 +35,7 @@ public class Wither_BossState_Phase1 extends Wither_BossState {
     @Override
     public List<Component> getObjectiveName() {
         return List.of(
-                TextUtil.makeText("Disable Shields")
+                TextUtil.makeText("Disable Shields", TextUtil.YELLOW)
         );
     }
 

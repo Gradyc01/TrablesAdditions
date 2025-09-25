@@ -2,30 +2,37 @@ package me.depickcator.trablesAdditions.Game.Items.Uncraftable;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import me.depickcator.trablesAdditions.Game.Items.Interfaces.Craft;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ItemClick;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.ItemComparison;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 
 public class ReviveStone extends CustomItem implements ItemClick {
     private static ReviveStone instance;
+    private final NamespacedKey key = new NamespacedKey(TrablesAdditions.getInstance(), "ReviveStoneWorld");
     private ReviveStone() {
         super("Revive Stone", "revive_stone");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     @Override
@@ -47,7 +54,15 @@ public class ReviveStone extends CustomItem implements ItemClick {
 
 
     public ItemStack getResult(World world) {
-        return super.getResult();
+        ItemStack item = super.getResult();
+        ItemMeta meta = item.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        container.set(key, PersistentDataType.STRING, world.getName());
+        List<Component> lore = new ArrayList<>(meta.lore());
+        lore.add(TextUtil.makeText("Can only be used in this world!", TextUtil.DARK_RED));
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
     }
 
     @Override
@@ -57,8 +72,15 @@ public class ReviveStone extends CustomItem implements ItemClick {
 
         RealmController controller = RealmController.getController(p.getWorld().getName());
         if (controller == null) return false;
+        ItemStack item = e.getItem();
+        PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+        if (container.has(key, PersistentDataType.STRING)) {
+            if (!p.getWorld().getName().equals(container.get(key, PersistentDataType.STRING))) {
+                TextUtil.errorMessage(p, "This revive stone is locked to a specific world and can't be used!");
+                return false;
+            }
+        }
         if (ItemComparison.isHolding(p, getResult()) && controller.getRealmPlayers().attemptToRevive(p)) {
-            ItemStack item = p.getInventory().getItemInMainHand();
             item.setAmount(item.getAmount() - 1);
             return false;
         }

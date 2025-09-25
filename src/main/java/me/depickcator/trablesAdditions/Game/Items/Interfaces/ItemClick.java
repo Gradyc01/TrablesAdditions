@@ -17,7 +17,7 @@ public interface ItemClick {
     False Otherwise*/
     boolean uponClick(PlayerInteractEvent e, PlayerData pD);
 
-    default void registerItem(CustomItem customItem, ItemClick itemClick) {
+    default void registerClick(CustomItem customItem, ItemClick itemClick) {
         items.put(ItemComparison.itemParser(customItem.getResult()), itemClick);
     }
 

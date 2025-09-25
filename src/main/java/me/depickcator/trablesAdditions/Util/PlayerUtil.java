@@ -1,11 +1,14 @@
 package me.depickcator.trablesAdditions.Util;
 
+import me.depickcator.trablesAdditions.Game.Items.Interfaces.ArmorSet;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ArmorMeta;
 
 import java.util.*;
 
@@ -27,6 +30,9 @@ public class PlayerUtil {
     }
 
     public static void clearPlayerDataMap() {
+        for (PlayerData playerData : playerDataMap.values()) {
+            playerData.saveData();
+        }
         playerDataMap.clear();
     }
 
@@ -65,7 +71,7 @@ public class PlayerUtil {
         giveItem(p, new ArrayList<>(List.of(items)));
     }
 
-    public static void giveItem(Player p, List<ItemStack> items) {
+    public static void giveItem(Player p, Collection<ItemStack> items) {
         PlayerInventory inv = p.getInventory();
         List<ItemStack> itemsLeft = new ArrayList<>(); // Items Left to give
         for (ItemStack item : items) {
@@ -118,5 +124,42 @@ public class PlayerUtil {
     public static void clearEffects(PlayerData pD) {
         Player p = pD.getPlayer();
         p.clearActivePotionEffects();
+    }
+
+    public static boolean removeItems(Player player, ItemStack item, int amount) {
+        PlayerInventory inventory = player.getInventory();
+        int remaining = amount;
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack currentItem = inventory.getItem(i);
+            if (currentItem == null || !currentItem.isSimilar(item)) continue;
+            int amountToRemove = Math.min(currentItem.getAmount(), remaining);
+            currentItem.setAmount(currentItem.getAmount() - amountToRemove);
+            remaining -= amountToRemove;
+            if (remaining == 0) {
+//                break;
+                return true;
+            }
+        }
+
+        if (remaining > 0) {
+            player.sendMessage("You don't have enough " + item.getType().name().toLowerCase() + " to remove exactly " + amount + ".");
+        }
+        return false;
+    }
+
+    public static boolean containsItem(Player player, ItemStack item, int amount) {
+        PlayerInventory inventory = player.getInventory();
+        int remaining = amount;
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack currentItem = inventory.getItem(i);
+            if (currentItem != null && ItemComparison.equalItems(currentItem, item) ) {
+                int amountToRemove = Math.min(currentItem.getAmount(), remaining);
+                remaining -= amountToRemove;
+                if (remaining == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

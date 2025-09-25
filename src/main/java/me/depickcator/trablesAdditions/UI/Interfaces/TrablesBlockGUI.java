@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.UI.Interfaces;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.text.Component;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import org.bukkit.block.Block;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -33,6 +34,7 @@ public abstract class TrablesBlockGUI extends TrablesGUI implements BlockUI {
     }
 
     public static void removeGUI(BlockUI gui) {
+        TextUtil.debugText("Removing GUI: " + gui.getBlock().getType().name());
         GUIMAP.remove(gui.getBlock());
     }
 

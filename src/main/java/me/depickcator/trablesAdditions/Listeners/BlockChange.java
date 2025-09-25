@@ -1,6 +1,9 @@
 package me.depickcator.trablesAdditions.Listeners;
 
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.UI.Interfaces.BlockUI;
+import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockGUI;
+import me.depickcator.trablesAdditions.UI.MainMenuBlockGUI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -13,6 +16,10 @@ public class BlockChange extends TrablesListeners {
         String worldName = event.getBlock().getWorld().getName();
         RealmController controller = RealmController.getController(worldName);
         if (controller != null) controller.getRealmState().onBlockBreak(event);
+        if (!event.isCancelled()) {
+            BlockUI blockGUI = TrablesBlockGUI.findGUI(event.getBlock());
+            if (blockGUI != null) TrablesBlockGUI.removeGUI(blockGUI);
+        };
     }
 
     @EventHandler

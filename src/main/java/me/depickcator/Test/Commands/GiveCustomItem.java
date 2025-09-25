@@ -1,6 +1,7 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
+import me.depickcator.trablesAdditions.Game.Items.CraftData;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.RepairKit;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
@@ -100,13 +101,9 @@ public class GiveCustomItem extends TrablesCommands {
 
     private Collection<CustomItem> getAllCustomItems() {
         Collection<CustomItem> allItems = new ArrayList<>();
-        allItems.addAll(plugin.getCraftData().getAllCrafts());
-        allItems.addAll(List.of(ReviveStone.getInstance(), RepairKit.getInstance()));
-        allItems.addAll(Set.of(CompactTNT.getInstance(), CupidEssence.getInstance(),
-                KrivonHandle.getInstance(), OceanCore.getInstance(),
-                ReinforcedPlating.getInstance(), ShatteredQuiver.getInstance(),
-                SpiderSilk.getInstance(), ThunderCore.getInstance(), ZombieHeart.getInstance(),
-                IronStaff.getInstance()));
+        CraftData craftData = plugin.getCraftData();
+        allItems.addAll(craftData.getGlobalItems());
+        allItems.addAll(craftData.getWitherRealmItems());
         return allItems;
     }
 }

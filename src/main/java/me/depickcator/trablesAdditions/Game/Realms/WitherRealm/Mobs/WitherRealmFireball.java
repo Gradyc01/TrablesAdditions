@@ -9,6 +9,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +27,13 @@ public class WitherRealmFireball extends LargeFireball {
         this(level, owner, movement, explosionPower, true);
     }
 
+    public WitherRealmFireball(Level level, Player player, Vec3 movement, int explosionPower) {
+        this(level, ((CraftLivingEntity) player).getHandle(), movement, explosionPower, false);
+        this.setOwner(((CraftLivingEntity) player).getHandle());
+        Location location = player.getEyeLocation().add(movement.x(), movement.y(), movement.z());
+        this.setPosRaw(location.getX(), location.getY(), location.getZ());
+    }
+
     @Override
     protected void onHit(HitResult result) {
         super.onHit(result);
@@ -35,6 +45,7 @@ public class WitherRealmFireball extends LargeFireball {
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
+        if (result.getEntity().equals(getOwner())) return;
         super.onHitEntity(result);
     }
 

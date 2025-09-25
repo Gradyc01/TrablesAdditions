@@ -27,6 +27,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -45,10 +46,10 @@ public class WitherRealmZombieKnight extends Zombie implements RealmNMSMob {
         this.equipment.set(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(initSword()));
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(52.0F);
-        this.equipment.set(EquipmentSlot.HEAD, initArmor(Material.LEATHER_HELMET, "Helmet", 3.5));
-        this.equipment.set(EquipmentSlot.CHEST, initArmor(Material.LEATHER_CHESTPLATE, "Chestplate", 8));
-        this.equipment.set(EquipmentSlot.LEGS, initArmor(Material.LEATHER_LEGGINGS, "Leggings", 6));
-        this.equipment.set(EquipmentSlot.FEET, initArmor(Material.LEATHER_BOOTS, "Boots", 3.5));
+        this.equipment.set(EquipmentSlot.HEAD, initArmor(Material.LEATHER_HELMET, "Helmet", 3.0));
+        this.equipment.set(EquipmentSlot.CHEST, initArmor(Material.LEATHER_CHESTPLATE, "Chestplate", 7.5));
+        this.equipment.set(EquipmentSlot.LEGS, initArmor(Material.LEATHER_LEGGINGS, "Leggings", 5.25));
+        this.equipment.set(EquipmentSlot.FEET, initArmor(Material.LEATHER_BOOTS, "Boots", 3.25));
         super.targetSelector.removeAllGoals(goal -> true);
         super.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Skeleton.class, Stray.class, Bogged.class, Drowned.class)));
         super.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
@@ -92,10 +93,10 @@ public class WitherRealmZombieKnight extends Zombie implements RealmNMSMob {
         meta.customName(TextUtil.makeText("Zombie Knight " + name, TextUtil.YELLOW));
         meta.addAttributeModifier(Attribute.ARMOR, new AttributeModifier(
                 new NamespacedKey(TrablesAdditions.getInstance(), "zombie_knight_" + name),
-                amount, AttributeModifier.Operation.ADD_NUMBER));
+                amount, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ARMOR));
         meta.addAttributeModifier(Attribute.MAX_HEALTH, new AttributeModifier(
                 new NamespacedKey(TrablesAdditions.getInstance(), "zombie_knight_" + name + "_health"),
-                2, AttributeModifier.Operation.ADD_NUMBER));
+                2, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ARMOR));
         meta.setMaxDamage(600);
         meta.setEnchantmentGlintOverride(true);
         item.setItemMeta(meta);

@@ -11,8 +11,10 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +30,10 @@ public class WorldEditUtil {
 
         try (ClipboardReader reader = format.getReader(new FileInputStream(schemFile))) {
             Clipboard clipboard = reader.read();
+            Vector v = loc.getDirection();
+            if (Math.abs(v.getX()) < Math.abs(v.getZ())) {
+                clipboard = clipboard.transform(new AffineTransform().rotateY(90));
+            }
 //
             EditSession editSession = WorldEdit.getInstance().newEditSessionBuilder()
                     .world(BukkitAdapter.adapt(loc.getWorld()))

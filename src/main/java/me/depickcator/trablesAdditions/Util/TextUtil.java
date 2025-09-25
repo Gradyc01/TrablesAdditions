@@ -215,4 +215,21 @@ public class TextUtil {
         }
     }
 
+    public static String formatNumber(int number) {
+        if (number < 1000) {
+            return String.valueOf(number);
+        }
+
+        String[] suffixes = {"", "k", "m", "b", "t"};
+        int magnitude = (int) Math.floor(Math.log10(Math.abs(number)) / 3);
+        double scaled = number / Math.pow(1000, magnitude);
+        String formatted = String.format("%.2f", scaled);
+
+        if (formatted.endsWith(".00")) {
+            formatted = formatted.substring(0, formatted.indexOf("."));
+        }
+
+        return formatted + suffixes[magnitude];
+    }
+
 }

@@ -1,17 +1,21 @@
 package me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials;
 
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
+import me.depickcator.trablesAdditions.Game.Items.Interfaces.ItemClick;
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Util.ItemUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class ShatteredQuiver extends CustomItem {
+public class ShatteredQuiver extends CustomItem implements ItemClick {
     private static ShatteredQuiver instance;
     private ShatteredQuiver() {
         super("Shattered Quiver", "shattered_quiver");
+        registerClick(this, this);
     }
 
     @Override
@@ -33,5 +37,10 @@ public class ShatteredQuiver extends CustomItem {
             instance = new ShatteredQuiver();
         }
         return instance;
+    }
+
+    @Override
+    public boolean uponClick(PlayerInteractEvent e, PlayerData pD) {
+        return false;
     }
 }

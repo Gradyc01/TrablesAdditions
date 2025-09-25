@@ -22,17 +22,11 @@ public class DimensionalTravel extends TrablesListeners {
             String worldString = b.getMetadata(DIMENSIONAL_TRAVEL_KEY).getFirst().asString();
             TextUtil.debugText(player.getName() + " has dimensionality travelling" + worldString);
             RealmController controller = RealmController.getController(worldString);
-            if (controller != null) {
-                event.setCanCreatePortal(false);
-//                Location teleportLocation = controller.getSpawnLocation();
-//                if (teleportLocation == null) event.setCancelled(true);
-//                else {
-//                    event.setTo(teleportLocation);
-//                    player.teleport(teleportLocation);
-//                }
-                controller.joinWorld(PlayerUtil.getPlayerData(player));
-                event.setCancelled(true);
-
+            if (controller!=null) {
+                if (controller.getRealmState().onDimensionalTravel(event, controller)) {
+                    event.setCanCreatePortal(false);
+                    event.setCancelled(true);
+                };
             }
         }
         TextUtil.debugText("Dimensional Travel", debugText);

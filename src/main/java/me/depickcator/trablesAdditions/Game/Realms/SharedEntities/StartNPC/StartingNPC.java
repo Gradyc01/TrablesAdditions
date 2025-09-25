@@ -46,12 +46,19 @@ public class StartingNPC implements EntityInteractable {
         checkReadiedCount();
     }
 
+    public void leaveRealm(PlayerData playerData) {
+        readiedPlayers.remove(playerData.getPlayer().getUniqueId());
+        checkReadiedCount();
+        controller.leaveWorld(playerData);
+    }
+
     private void checkReadiedCount() {
         if (readiedPlayers.size() >= controller.getWorld().getPlayers().size()) {
             controller.startRealm();
             removeEntity();
         }
     }
+
 
     @Override
     public boolean interact(PlayerData playerData, PlayerInteractEntityEvent event) {

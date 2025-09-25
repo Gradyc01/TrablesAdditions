@@ -19,7 +19,7 @@ public class ZombieHeart extends CustomItem implements ItemClick {
     private static ZombieHeart instance;
     private ZombieHeart() {
         super("Zombie Heart", "zombie_heart");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     @Override

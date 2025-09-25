@@ -61,7 +61,7 @@ public class Wither_BossState_Phase2 extends Wither_BossState {
     @Override
     public List<Component> getObjectiveName() {
         return List.of(
-                TextUtil.makeText("Eliminate Krivon")
+                TextUtil.makeText("Eliminate Krivon", TextUtil.YELLOW)
         );
     }
 

@@ -29,7 +29,7 @@ public class LeapingAxe extends Weapon implements ItemClick, ItemCooldown {
     private static LeapingAxe instance;
     private LeapingAxe() {
         super("Leaping Axe", "leaping_axe", 7, -2.4);
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     protected Recipe initRecipe() {

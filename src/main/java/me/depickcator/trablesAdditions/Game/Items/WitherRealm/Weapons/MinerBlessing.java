@@ -24,7 +24,7 @@ public class MinerBlessing extends Craft implements ItemClick {
     private static MinerBlessing instance;
     private MinerBlessing() {
         super("Miner's Blessing", "miner_blessing");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     public static MinerBlessing getInstance() {

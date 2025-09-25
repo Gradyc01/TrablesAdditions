@@ -15,7 +15,7 @@ public class OceanCore extends CustomItem implements ItemClick {
     private static OceanCore instance;
     private OceanCore() {
         super("Ocean Core", "ocean_core");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     @Override

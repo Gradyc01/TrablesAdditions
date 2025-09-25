@@ -55,4 +55,8 @@ public abstract class TrablesPlayerMenuGUI extends TrablesMenuGUI {
 
     /* Triggers when a player interacts with an item in the GUI */
     public abstract boolean interactWithGUIButtons(PlayerData playerData, InventoryClickEvent event);
+
+    public PlayerData getPlayerData() {
+        return playerData;
+    }
 }

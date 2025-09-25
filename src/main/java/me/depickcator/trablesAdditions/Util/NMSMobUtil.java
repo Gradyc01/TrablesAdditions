@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -62,9 +63,10 @@ public class NMSMobUtil {
         AttributeInstance attribute = null;
         if (damageSource.getEntity() instanceof LivingEntity livingEntity) attribute = livingEntity.getAttribute(Attributes.LUCK);
         double chance = dropChance * (attribute == null ? 1.0 : attribute.getValue() + 1.0);
-        float num = entity.random.nextFloat();
+        RandomSource random = entity.random;
+        float num = random.nextFloat();
         TextUtil.debugText(num + " v.s." + chance);
-        Location location = entity.getBukkitEntity().getLocation().clone().add(0, 1, 0);
+        Location location = entity.getBukkitEntity().getLocation().clone().add(random.nextFloat() - 0.5, 1, random.nextFloat() - 0.5);
         if (num < chance) {
             if (dropChance <= 0.20) {
                 dropRareItem(item, location, damageSource, dropChance);

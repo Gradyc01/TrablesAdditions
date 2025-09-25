@@ -12,29 +12,29 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class RealmOpeningAnimation implements Floodable {
+public class RealmOpeningAnimation {
     private final Location centerPoint;
     private final ArmorStand armorStand;
     private final RealmController realmController;
     private final FloodBlocks floodBlocks;
 
-    public RealmOpeningAnimation(Location centerPoint, RealmController realmController) {
+    public RealmOpeningAnimation(Location centerPoint, RealmController realmController, Floodable floodable) {
         this.centerPoint = centerPoint;
         this.realmController = realmController;
         armorStand = initArmorstand();
-        floodBlocks = new FloodBlocks(centerPoint.clone().add(0, -1, 0), 1.20, this);
+        floodBlocks = new FloodBlocks(centerPoint.clone().add(0, -1, 0), 1.20, floodable);
         start();
     }
 
     private void start() {
-        int ticks = 9 * 20; //TODO: Change back to 59 later
+        int ticks = 29 * 20; //TODO: Change back to 59 later
         Random random = new Random();
         floodBlocks.start(random);
         new BukkitRunnable() {
             int timePassed = 0;
             @Override
             public void run() {
-                if (timePassed % 100 == 0) {
+                if (timePassed % 80 == 0) {
                     spinParticle(0); spinParticle(Math.PI / 2);
                     spinParticle(Math.PI); spinParticle( 3 * Math.PI / 2);
                     spinParticle(Math.PI /4);spinParticle( 3 * Math.PI / 4);
@@ -85,31 +85,5 @@ public class RealmOpeningAnimation implements Floodable {
             }
         }.runTaskTimer(TrablesAdditions.getInstance(), 0, 1);
 
-    }
-
-
-    @Override
-    public Block changeBlock(Block block, Random r, FloodBlocks floodBlocks) {
-        block.setType(floodBlocks.chooseNextMaterial(r));
-        return block;
-    }
-
-    @Override
-    public Map<Material, Integer> getUnFloodables() {
-        return Map.of(
-                Material.SOUL_SAND, 22,
-                Material.LAVA, 3,
-                Material.NETHERRACK, 75,
-                Material.AIR, 0);
-    }
-
-    @Override
-    public boolean isUnFloodable(Block b) {
-        return getUnFloodables().containsKey(b.getType());
-    }
-
-    @Override
-    public double getNewSuccessRate(double oldSuccessRate, Random r) {
-        return oldSuccessRate - r.nextDouble(0.1, 0.20);
     }
 }

@@ -38,7 +38,7 @@ public class WitherRealm_FillLoot extends WitherRealmActions {
                     case 2 -> Pair.of(Material.ENDER_CHEST, lootPoolTier2);
                 };
                 block.setType(chestType.getLeft());
-                realm.addLootChestGUI(new WitherRealm_LootGUI(block, chestType.getRight(), random));
+                realm.addLootChestGUI(getMeshName(), new WitherRealm_LootGUI(block, chestType.getRight(), random, realm));
             }
             return true;
         } catch (IOException e) {

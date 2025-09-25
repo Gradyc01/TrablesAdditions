@@ -9,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -68,9 +69,13 @@ public class NatureWrath {
                 if (isAPlayer) {
                     player.sendMessage(text);
                     player.playSound(loc, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1.0f, 2.0f);
+                    entity.setHealth(Double.max(0.1, entity.getHealth() - 2.5));
+                } else {
+                    entity.setHealth(Double.max(0.1, entity.getHealth() -
+                            Double.max(10.0, entity.getAttribute(Attribute.MAX_HEALTH).getValue()/10)));
                 }
 
-                entity.setHealth(Double.max(0.1, entity.getHealth() - 2.5));
+
                 world.strikeLightningEffect(loc);
                 world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 1.0F);
                 world.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 1.0F, 0.0F);

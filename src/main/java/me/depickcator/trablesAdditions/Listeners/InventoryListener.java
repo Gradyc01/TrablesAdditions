@@ -23,7 +23,7 @@ public class InventoryListener extends TrablesListeners {
         PlayerData pD = PlayerUtil.getPlayerData(player);
         Inventory inventory = e.getInventory();
         Pair<Inventory, TrablesGUI> playerGUI = TrablesGUI.findInventory(player);
-        if (playerGUI == null) {
+        if (playerGUI == null && e.isRightClick()) {
             ItemDrop itemDrop = ItemDrop.findDropItem(e.getCursor());
             if (itemDrop != null && e.getCurrentItem() !=null && e.getCurrentItem().getType() != Material.AIR) {
                 itemDrop.uponApply(e, e.getCurrentItem(), e.getCursor(), pD);
@@ -34,7 +34,7 @@ public class InventoryListener extends TrablesListeners {
             if (!playerGUI.getRight().interactWithGUIButtons(pD, e)) {
                 e.setCancelled(true);
             }
-            if (playerGUI.getRight() instanceof TrablesMenuGUI) e.setCancelled(true);
+//            if (playerGUI.getRight() instanceof TrablesMenuGUI) e.setCancelled(true);
         }
     }
 

@@ -15,7 +15,7 @@ public class CompactTNT extends CustomItem implements ItemClick {
     private static CompactTNT instance;
     private CompactTNT() {
         super("Compact TNT", "compact_tnt");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     @Override

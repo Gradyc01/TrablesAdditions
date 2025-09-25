@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 
 import me.depickcator.trablesAdditions.Game.Effects.Interfaces.ImmuneToEffects;
+import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.WitherRealmKey;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Boss.WitherRealmVex;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Boss.WitherRealmWitherSkeleton;
@@ -107,6 +108,15 @@ public class WitherRealmWither extends WitherBoss implements RealmNMSMob, Immune
         super.aiStep();
     }
 
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
+//        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
+        World world = getLocation().getWorld();
+        for (Player player : level.getPlayers(serverPlayer -> serverPlayer.isRealPlayer)) {
+            new ItemDisplay(getLocation(), WitherRealmKey.getInstance().getResult(),
+                    List.of((org.bukkit.entity.Player) player.getBukkitLivingEntity()));
+        }
+    }
 
     @Override
     protected void customServerAiStep(ServerLevel level) {

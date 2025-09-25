@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.LootTables.Interfaces;
 
+import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,6 +22,14 @@ public class LootPoolItem {
 
     public LootPoolItem(Material material) {
         this(new ItemStack(material), 1);
+    }
+
+    public LootPoolItem(CustomItem item, int weight) {
+        this(item.getResult(), weight);
+    }
+
+    public LootPoolItem(CustomItem item) {
+        this(item.getResult(), 1);
     }
 
     public ItemStack getItem() {

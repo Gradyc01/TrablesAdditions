@@ -39,7 +39,7 @@ public abstract class Wither_BossState extends WitherRealmState {
     @Override
     public List<Component> getObjectiveName() {
         return List.of(
-                TextUtil.makeText("Defeat Krivon")
+                TextUtil.makeText("Defeat Krivon", TextUtil.YELLOW)
         );
     }
 

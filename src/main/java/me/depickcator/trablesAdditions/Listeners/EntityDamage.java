@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.Listeners;
 import io.papermc.paper.tag.EntityTags;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ShootsProjectiles;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.Weapon;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.*;
@@ -41,6 +42,8 @@ public class EntityDamage extends TrablesListeners {
     }
 
     private void playerDamagedEffects(EntityDamageByEntityEvent event, Player victim) {
+        if (isPlayerAttacker(event)) {}//TODO: run uponDamagingPlayer actually move this out of here
+        event.setDamage(PlayerUtil.getPlayerData(victim).getPlayerArmorEffects().uponGettingDamaged(event));
         if (isProjectileAttack(event) && ((AbstractArrow) event.getDamager()).getShooter() instanceof Player attacker) {
             sendArrowDamageMessage(victim, attacker, event);
         }
@@ -74,6 +77,10 @@ public class EntityDamage extends TrablesListeners {
 
     private boolean isProjectileAttack(EntityDamageByEntityEvent event) {
         return event.getDamager() instanceof AbstractArrow;
+    }
+
+    private boolean isPlayerAttacker(EntityDamageByEntityEvent event) {
+        return event.getDamageSource().getCausingEntity() instanceof Player;
     }
 
     private void sendArrowDamageMessage(Player victim, Player damager, EntityDamageByEntityEvent event) {

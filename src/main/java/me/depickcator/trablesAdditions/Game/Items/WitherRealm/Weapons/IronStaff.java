@@ -1,11 +1,9 @@
 package me.depickcator.trablesAdditions.Game.Items.WitherRealm.Weapons;
 
 import me.depickcator.trablesAdditions.Game.Effects.GolemLaunch;
-import me.depickcator.trablesAdditions.Game.Items.Interfaces.Craft;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ItemClick;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ShootsProjectiles;
-import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.CompactTNT;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.Util.SoundUtil;
@@ -17,13 +15,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BoundingBox;
 
@@ -34,7 +27,7 @@ public class IronStaff extends CustomItem implements ItemClick, ShootsProjectile
     private static IronStaff instance;
     private IronStaff() {
         super("Iron Staff", "iron_staff");
-        registerItem(this, this);
+        registerClick(this, this);
         addProjectile(this, this);
     }
 
@@ -93,7 +86,7 @@ public class IronStaff extends CustomItem implements ItemClick, ShootsProjectile
     /*Returns true if not on cooldown and sets the cooldown, False otherwise*/
     private boolean checkCooldown(Player p, ItemStack item) {
         if (!p.hasCooldown(item) ) {
-            p.setCooldown(item, 15 * 20);
+            p.setCooldown(item, 18 * 20);
             return true;
         }
         return false;

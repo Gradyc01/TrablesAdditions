@@ -19,6 +19,7 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class WitherRealmStunControlPanel extends WitherRealmControlPanelGUI {
@@ -36,7 +37,7 @@ public class WitherRealmStunControlPanel extends WitherRealmControlPanelGUI {
 
     @Override
     protected void onClickCorrectButton(PlayerData playerData) {
-        wither.setTarget(((CraftLivingEntity) playerData.getPlayer()).getHandle());
+        wither.setTarget(((CraftLivingEntity) playerData.getPlayer()).getHandle(), EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY);
     }
 
     @Override

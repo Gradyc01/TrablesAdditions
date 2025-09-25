@@ -1,7 +1,9 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
+import me.depickcator.trablesAdditions.Game.Items.Crafts.PortableWorkbench.PortableWorkbench;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
+import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.ItemDisplay;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
@@ -96,6 +98,18 @@ public class TrablesTest extends TrablesCommands {
                     generalKit(player);
                 }
             }
+            case "give-kit-all" -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.getInventory().clear();
+                    String arg = args.length > 1 ?  args[1] : "0";
+                    switch (arg) {
+                        case "2" -> kit2(player);
+                        case "3" -> kit3(player);
+                        default ->  kit1(player);
+                    }
+                    generalKit(player);
+                }
+            }
             case "start-boss" -> {
                 if (sender instanceof Player player) {
                     RealmController controller = RealmController.getController(player.getWorld().getName());
@@ -108,6 +122,12 @@ public class TrablesTest extends TrablesCommands {
                     summon(player, args.length > 1 ? args[1] : "0");
                 }
             }
+            case "setInventory" -> {
+                if (sender instanceof Player player && args.length > 1) {
+                    PlayerData target = PlayerUtil.getPlayerData(args.length > 2 ? Bukkit.getPlayer(args[1]) : player);
+                    target.getPlayerInventories().setInventoryTo(args[args.length - 1]);
+                }
+            }
 
         }
         return true;
@@ -115,7 +135,8 @@ public class TrablesTest extends TrablesCommands {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm", "end-realm", "give-kit", "revive", "start-boss", "summon");
+        return List.of("open-main-menu", "add-playerData", "remove-playerData", "start-realm",
+                "end-realm", "give-kit", "give-kit-all", "revive", "start-boss", "summon", "setInventory");
     }
 
     private void summon(Player player, String string) {
@@ -144,7 +165,7 @@ public class TrablesTest extends TrablesCommands {
                 new ItemStack(Material.SHIELD),
                 new ItemStack(Material.SHIELD),
                 new ItemStack(Material.ARROW, 64),
-                ReviveStone.getInstance().getResult());
+                PortableWorkbench.getInstance().getResult());
     }
 
     private void kit1(Player player) {

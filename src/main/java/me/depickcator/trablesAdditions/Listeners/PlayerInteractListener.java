@@ -7,6 +7,7 @@ import me.depickcator.trablesAdditions.Interfaces.EntityInteractable;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.BlockUI;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockGUI;
+import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.minecraft.server.dialog.input.TextInput;
@@ -35,6 +36,13 @@ public class PlayerInteractListener extends TrablesListeners {
         }
 
         PlayerData pD = PlayerUtil.getPlayerData(p);
+        if (controller == null && e.getClickedBlock() != null && e.getAction().isRightClick() &&
+                e.getClickedBlock().getType() == Material.FLETCHING_TABLE ) {
+            new MainMenuGUI(pD);
+            e.setCancelled(true);
+            return;
+        }
+
         boolean blockHasInventory = blockHasInventory(e, pD);
         if (e.getItem() == null) return;
         ItemClick itemClick = ItemClick.findClickItem(e.getItem());

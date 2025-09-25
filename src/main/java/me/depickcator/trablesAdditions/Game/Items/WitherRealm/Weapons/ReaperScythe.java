@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -26,7 +27,8 @@ public class ReaperScythe extends Weapon {
     @Override
     public boolean onCustomWeaponUse(EntityDamageByEntityEvent event, LivingEntity attacker, LivingEntity target) {
         double finalDamage = event.getFinalDamage();
-        attacker.heal(finalDamage/10);
+//        attacker.heal(finalDamage/10);
+        attacker.heal(attacker instanceof Player ? finalDamage/10 : finalDamage * 2);
         attacker.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, attacker.getLocation(), 15, 3, 2,3);
         return true;
     }

@@ -1,26 +1,21 @@
 package me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ItemClick;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Util.TextUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
-import java.util.UUID;
 
 public class SpiderSilk extends CustomItem implements ItemClick {
     private static SpiderSilk instance;
     private SpiderSilk() {
         super("Spider Silk", "spider_silk");
-        registerItem(this, this);
+        registerClick(this, this);
     }
 
     @Override

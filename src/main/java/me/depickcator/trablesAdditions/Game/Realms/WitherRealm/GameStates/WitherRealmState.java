@@ -1,6 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStats;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
@@ -16,6 +17,7 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -24,10 +26,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerBucketEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Objective;
@@ -41,8 +40,12 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
     private final Set<CreatureSpawnEvent.SpawnReason> reasons = Set.of(
             CreatureSpawnEvent.SpawnReason.BUILD_WITHER, CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM,
             CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
+    private final String REALM_KILLS_KEY;
+    private final String REALM_DEATHS_KEY;
     public WitherRealmState(WitherRealm realm) {
         this.realm = realm;
+        REALM_KILLS_KEY = realm.getWorldName() + realm.getUUID() + "_kills";
+        REALM_DEATHS_KEY = realm.getWorldName() + realm.getUUID() + "_deaths";
     }
 
     @Override
@@ -66,6 +69,9 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
         event.setCancelled(true);
         controller.getRealmPlayers().playerDied(event.getPlayer());
         if (event.deathMessage() !=null) TextUtil.broadcastMessage(event.deathMessage().color(TextUtil.DARK_RED));
+        PlayerData pD = PlayerUtil.getPlayerData(event.getPlayer());
+        pD.getPlayerStats().addNumberStat(REALM_DEATHS_KEY, 1);
+        pD.getPlayerScoreboards().updateBoard(this);
     }
 
     @Override
@@ -85,7 +91,9 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
 
     @Override
     public void onPlayerLeave(PlayerQuitEvent event, RealmController controller) {
+        TextUtil.debugText("B");
         controller.leaveWorld(PlayerUtil.getPlayerData(event.getPlayer()));
+        TextUtil.debugText("C");
     }
 
     @Override
@@ -116,6 +124,11 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
             String name = event.getEntity().getMetadata(WitherRealm.WITHER_REALM_DUNGEON_DISCIPLE_KEY).getFirst().asString();
             realm.removeDisciple(name);
         }
+        if (event.getDamageSource().getCausingEntity() instanceof Player player) {
+            PlayerData pD = PlayerUtil.getPlayerData(player);
+            pD.getPlayerStats().addNumberStat(REALM_KILLS_KEY, 1);
+            pD.getPlayerScoreboards().updateBoard(this);
+        }
     }
 
     @Override
@@ -139,9 +152,16 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
     }
 
     @Override
+    public boolean onDimensionalTravel(PlayerPortalEvent event, RealmController controller) {
+//        event.setCanCreatePortal(false);
+        controller.joinWorld(PlayerUtil.getPlayerData(event.getPlayer()));
+//        event.setCancelled(true);
+        return true;
+    }
+
+    @Override
     public void onSet() {
         //Do Nothing on purpose
-        TextUtil.debugText("Set");
         BoardMaker boardMaker = realm.getBoardMaker();
         boardMaker.addObserver(this);
         boardMaker.updateAllViewers(this);
@@ -164,6 +184,10 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
         List<Component> objective = getObjectiveName();
         maker.editLine(board, 9, indent.append(objective.getFirst()));
         maker.editLine(board, 8, indent.append(objective.size() >= 2 ? objective.get(1) : TextUtil.makeText("")));
+
+        PlayerStats pS = playerData.getPlayerStats();
+        maker.editLine(board, 3, TextUtil.makeText(" Realm Kills: " + pS.getNumberStat(REALM_KILLS_KEY)));
+        maker.editLine(board, 2, TextUtil.makeText(" Realm Deaths: " + pS.getNumberStat(REALM_DEATHS_KEY)));
     }
 
     /*Returns a List of Components that describe the objective name

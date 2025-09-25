@@ -1,11 +1,14 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm;
 
+import me.depickcator.trablesAdditions.Game.Effects.FloodBlocks;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.*;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.*;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot.WitherRealmLoot;
+import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Map.WitherRealmMap;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.StartBoss.StartBoss;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.UI.WitherRealm_LootGUI;
 import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
@@ -14,6 +17,7 @@ import me.depickcator.trablesAdditions.Scoreboards.WitherRealmBoard;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockGUI;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.SoundUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.audience.Audience;
@@ -21,11 +25,13 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.util.BoundingBox;
 
 import java.time.Instant;
 import java.util.*;
@@ -40,36 +46,32 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
     private final Set<String> actionsLoaded;
     private final Map<Block, Integer> placedBlocks;
     private final Set<String> bossDisciples;
-    private final Set<WitherRealm_LootGUI> lootGUIS;
+    private final Map<String, Set<WitherRealm_LootGUI>> lootGUIs; //Chest Names : LootGUIS
+    private final Map<BoundingBox, WitherRealmMap> realmMap; //Bounding Boxes :
     private RealmController controller;
     private Audience audience;
     private int timeTicks;
 
     public WitherRealm(Location location) {
-        super(location, "TestRealm", "Test Realm");
+        super(location, "wither_realm", "Wither Realm");
         roomMap = new HashMap<>();
         actionsLoaded = new HashSet<>();
         placedBlocks = new HashMap<>();
-        lootGUIS = new HashSet<>();
+        lootGUIs = new HashMap<>();
         bossDisciples = new HashSet<>();
+        realmMap = new HashMap<>();
         audience = Audience.audience(Bukkit.getOnlinePlayers());
     }
 
     @Override
-    public boolean runAction(PlayerData playerData, TrablesMenuGUI trablesMenuGUI, InventoryClickEvent event) {
+    public void initialize(PlayerData playerData) {
+        if (getPortalLocation().getBlock().isLiquid()) return;
         WitherRealmBoard.getInstance().addObserver(this);
         setRealmState(getStartingRealmState());
-
         Player player = playerData.getPlayer();
-        Location loc = player.getLocation();
-        TextUtil.broadcastMessage(TextUtil.makeText(player.getName() + " has activated WitherRealm it will be placed at"
-        + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ(), TextUtil.AQUA));
-        if (!loc.getBlock().isLiquid()) {
-            controller = new RealmController(this);
-            controller.initialize(); //Don't add anything past this that relies on the controller as the root may still be null
-
-        } else return false;
-        return true;
+        TextUtil.broadcastMessage(TextUtil.makeText(player.getName() + " has started a " + getDisplayName(), TextUtil.AQUA));
+        controller = new RealmController(this);
+        controller.initialize(); //Don't add anything past this that relies on the controller as the root may still be null
     }
 
     @Override
@@ -78,15 +80,22 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
         if (!new WitherRealm_FillLoot( "chest_1", controller, this).start()) return;
         startAnimation(controller);
         loadDoors();
+        loadMap();
         setRealmState(new Wither_InGameState(this));
     }
 
     @Override
     public void onEnd(RealmController controller) {
         WitherRealmBoard.getInstance().removeObserver(this);
-        for (WitherRealm_LootGUI lootGUI : new HashSet<>(lootGUIS)) {
-            TrablesBlockGUI.removeGUI(lootGUI);
-            lootGUIS.remove(lootGUI);
+//        for (WitherRealm_LootGUI lootGUI : new HashSet<>(lootGUIS)) {
+//            TrablesBlockGUI.removeGUI(lootGUI);
+//            lootGUIS.remove(lootGUI);
+//        }
+        for (Map.Entry<String, Set<WitherRealm_LootGUI>> entry : new HashSet<>(lootGUIs.entrySet())) {
+            for (WitherRealm_LootGUI lootGUI : entry.getValue()) {
+                TrablesBlockGUI.removeGUI(lootGUI);
+            }
+            lootGUIs.remove(entry.getKey());
         }
     }
 
@@ -105,6 +114,7 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
     public void onLoop(RealmController controller) {
         timeTick();
         removeOldBlocks();
+        updatePlayerMap();
     }
 
     private void timeTick() {
@@ -186,13 +196,52 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
     @Override
     public void onBossDefeated(RealmController controller) {
         setRealmState(new Wither_RewardState(this));
-        addDoor("door_boss_prize", Set.of());
+        addDoor("door_boss_prize", Set.of(new WitherRealm_FillWinnerLoot("chest_prize", controller, this)));
         triggerDoor("door_boss_prize");
+        controller.createExitPortal();
+    }
+
+    public void updateLootedCount(PlayerData playerData) {
+        Player player = playerData.getPlayer();
+        for (BoundingBox box : realmMap.keySet()) {
+            if (box.contains(player.getBoundingBox())) {
+                WitherRealmMap map = realmMap.get(box);
+                map.updateChestCount();
+            }
+        }
+    }
+
+    private void updatePlayerMap() {
+        World world = controller.getWorld();
+        for (BoundingBox box : realmMap.keySet()) {
+            Collection<Entity> players = world.getNearbyEntities(box, entity -> entity instanceof Player);
+            for (Entity e : players) {
+                if (e instanceof Player player) {
+                    PlayerUtil.getPlayerData(player).getPlayerScoreboards().updateBoard(realmMap.get(box));
+                }
+            }
+        }
     }
 
     @Override
     public BoardMaker getBoardMaker() {
         return WitherRealmBoard.getInstance();
+    }
+
+    private void loadMap() {
+        addMapping("box_spawn", "", "Spawn");
+        addMapping("box_1", "chest_1", "Ruined Hall");
+        addMapping("box_2", "chest_2", "King's Throne");
+        addMapping("box_3l", "chest_3l", "Archer's Cliff");
+        addMapping("box_3r", "chest_3r", "Old Tomb");
+        addMapping("box_3m", "chest_3m", "Forgotten Commons");
+        addMapping("box_conn", "chest_conn", "Paradise");
+        addMapping("box_conn_tunnel", "", "Connector");
+        addMapping("box_b2", "", "Disciple's Kingdom");
+        addMapping("box_b1", "", "Disciple's Kingdom");
+        addMapping("box_grand", "chest_grand", "Styx");
+        addMapping("box_be", "", "Prosperity");
+        addMapping("box_boss", "", "Atlas");
     }
 
     private void loadDoors() {
@@ -278,6 +327,11 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
         roomMap.put(door.getMeshName(), actions);
     }
 
+    private void addMapping(String meshName, String chestName, String displayName) {
+        WitherRealmMap map = new WitherRealmMap(displayName, meshName, chestName, controller, this);
+        realmMap.put(map.getBoundingBox(), map);
+    }
+
     private void startAnimation(RealmController controller) {
         audience = Audience.audience(controller.getWorld().getPlayers());
         new BukkitRunnable() {
@@ -314,7 +368,22 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
     }
 
-    public void addLootChestGUI(WitherRealm_LootGUI lootGUI) {
-        lootGUIS.add(lootGUI);
+    public void addLootChestGUI(String chest_room, WitherRealm_LootGUI lootGUI) {
+        Set<WitherRealm_LootGUI> lootGuiSet = lootGUIs.getOrDefault(chest_room, new HashSet<>());
+        lootGuiSet.add(lootGUI);
+        lootGUIs.put(chest_room, lootGuiSet);
+    }
+
+    public Set<WitherRealm_LootGUI> getLootChestGUIs(String chestMesh) {
+        return lootGUIs.getOrDefault(chestMesh, new HashSet<>());
+    }
+
+    @Override
+    public Map<Material, Integer> getUnFloodables() {
+        return Map.of(
+                Material.MOSSY_STONE_BRICKS, 30,
+                Material.CRACKED_STONE_BRICKS, 30,
+                Material.STONE_BRICKS, 40,
+                Material.AIR, 0);
     }
 }

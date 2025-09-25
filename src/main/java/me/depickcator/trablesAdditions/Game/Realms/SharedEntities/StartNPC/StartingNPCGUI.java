@@ -1,9 +1,11 @@
 package me.depickcator.trablesAdditions.Game.Realms.SharedEntities.StartNPC;
 
+import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesPlayerMenuGUI;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -20,9 +22,11 @@ import java.util.Set;
 public class StartingNPCGUI extends TrablesPlayerMenuGUI {
     private final ItemStack readyButton;
     private final StartingNPC startingNPC;
+    private final ItemStack leaveButton;
     public StartingNPCGUI(PlayerData playerData, StartingNPC startingNPC) {
         super(playerData, 6, TextUtil.makeText("Ready Menu", TextUtil.AQUA), true);
         readyButton = initReadyButton();
+        leaveButton = initLeaveButton();
         this.startingNPC = startingNPC;
         initPanes();
         initSkulls();
@@ -33,6 +37,11 @@ public class StartingNPCGUI extends TrablesPlayerMenuGUI {
         if (event.getCurrentItem().equals(readyButton) && !startingNPC.playerHasReadied(playerData.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             startingNPC.addReadiedPlayer(playerData);
+            PlayerUtil.giveItem(player, ReviveStone.getInstance().getResult(startingNPC.getEntity().getWorld()));
+            player.closeInventory();
+        } else if (event.getCurrentItem().equals(leaveButton)) {
+            event.setCancelled(true);
+            startingNPC.leaveRealm(playerData);
             player.closeInventory();
         }
         return false;
@@ -72,6 +81,14 @@ public class StartingNPCGUI extends TrablesPlayerMenuGUI {
                 List.of(TextUtil.makeText("Click Here when you are ready!", TextUtil.DARK_PURPLE)),
                 TextUtil.makeText("Ready Up!", TextUtil.DARK_GREEN));
         inventory.setItem(49, item);
+        return item;
+    }
+
+    private ItemStack initLeaveButton() {
+        ItemStack item = initExplainerItem(Material.RED_WOOL,
+                List.of(TextUtil.makeText("Leave and abandon your friends!", TextUtil.DARK_PURPLE)),
+                TextUtil.makeText("Exit Realm", TextUtil.RED));
+        inventory.setItem(53, item);
         return item;
     }
 }

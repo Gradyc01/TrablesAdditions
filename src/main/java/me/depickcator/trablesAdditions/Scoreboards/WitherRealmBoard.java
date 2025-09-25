@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.Scoreboards;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
 import me.depickcator.trablesAdditions.Interfaces.ScoreboardObserver;
+import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.scoreboard.Objective;
 
 public class WitherRealmBoard extends BoardMaker {
@@ -17,6 +18,8 @@ public class WitherRealmBoard extends BoardMaker {
         for (ScoreboardObserver observer : getObservers()) {
             observer.update(this, board, playerData);
         }
+        editLine(board, 5, TextUtil.makeText(""));
+        editLine(board, 6, TextUtil.makeText("◈ Spawn", TextUtil.AQUA));
     }
 
     public static WitherRealmBoard getInstance() {

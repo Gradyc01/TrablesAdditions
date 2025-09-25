@@ -62,4 +62,8 @@ public abstract class TrablesGUI {
     public static void removeGUI(Player player) {
         guiMap.remove(player.getUniqueId());
     }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
 }

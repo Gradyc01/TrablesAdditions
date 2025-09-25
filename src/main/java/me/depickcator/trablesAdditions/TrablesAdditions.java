@@ -4,6 +4,10 @@ import me.depickcator.Test.Commands.*;
 import me.depickcator.trablesAdditions.Game.Items.CraftData;
 import me.depickcator.trablesAdditions.Game.Mechanics.EntityInteractions;
 import me.depickcator.trablesAdditions.Listeners.*;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
+import me.depickcator.trablesAdditions.Util.TextUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TrablesAdditions extends JavaPlugin {
@@ -26,7 +30,11 @@ public final class TrablesAdditions extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.kick(TextUtil.makeText("Server Restarting", TextUtil.DARK_RED));
+        }
+//        this.getServer().getScheduler().runTaskLater(this, () -> {TextUtil.debugText("Stopping Server now Bye");}, 60 * 20);
+//        PlayerUtil.clearPlayerDataMap();
     }
 
     public EntityInteractions getEntityInteractions() {return entityInteractions;}
@@ -47,6 +55,6 @@ public final class TrablesAdditions extends JavaPlugin {
         new InventoryListener(); new DimensionalTravel(); new BlockChange();
         new EntityDeath(); new MobSpawning(); new PlayerInteractListener();
         new EntityDamage(); new PlayerJoinLeave(); new ProjectileLaunch();
-        new EquipmentChange();
+        new EquipmentChange(); new PlayerCraftingEvent(); new ServerOpenClose();
     }
 }
