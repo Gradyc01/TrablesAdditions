@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot.WitherRealmLoot;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot.WitherRealm_Tier3Loot;
@@ -11,12 +12,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.Random;
 
-public class WitherRealm_FillWinnerLoot extends WitherRealmActions {
+public class WitherRealm_FillWinnerLoot extends RealmActions {
     private final WitherRealm realm;
     /*Material must contain a material that has an inventory*/
     public WitherRealm_FillWinnerLoot(String meshName, RealmController controller, WitherRealm realm) {

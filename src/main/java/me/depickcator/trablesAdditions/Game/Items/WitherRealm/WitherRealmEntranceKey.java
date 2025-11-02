@@ -86,7 +86,15 @@ public class WitherRealmEntranceKey extends CustomItem implements ItemClick, Ent
 
     @Override
     public List<Component> description() {
-        return List.of(TextUtil.makeText("Big Wither Man", TextUtil.DARK_PURPLE));
+        return List.of(
+                TextUtil.makeText("Once a thriving center of civilization now ", TextUtil.DARK_PURPLE),
+                TextUtil.makeText("reduced to ruins. This was the heart of a ", TextUtil.DARK_PURPLE),
+                TextUtil.makeText("mighty empire, now abandoned and forgotten", TextUtil.DARK_PURPLE),
+                TextUtil.makeText("Here stands Krivon, its cursed successor ", TextUtil.DARK_PURPLE),
+                TextUtil.makeText("commanding an army of undead. ", TextUtil.DARK_PURPLE),
+                TextUtil.makeText("Defeat him, and seize whatever ", TextUtil.RED),
+                TextUtil.makeText("remnants of the past still linger", TextUtil.RED),
+                TextUtil.makeText("within these forsaken ruins", TextUtil.RED));
     }
 
     @Override

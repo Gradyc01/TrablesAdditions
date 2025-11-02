@@ -104,6 +104,7 @@ public class GiveCustomItem extends TrablesCommands {
         CraftData craftData = plugin.getCraftData();
         allItems.addAll(craftData.getGlobalItems());
         allItems.addAll(craftData.getWitherRealmItems());
+        allItems.addAll(craftData.getLostCityLiberationItems());
         return allItems;
     }
 }

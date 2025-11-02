@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -230,6 +231,10 @@ public class TextUtil {
         }
 
         return formatted + suffixes[magnitude];
+    }
+
+    public static String formatLocation(Location location) {
+        return "(" + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() + ")";
     }
 
 }

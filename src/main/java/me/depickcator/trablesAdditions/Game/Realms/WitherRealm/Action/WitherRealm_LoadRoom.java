@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.*;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Skeletons.WitherRealmBog;
@@ -21,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
 import java.util.Random;
 
-public class WitherRealm_LoadRoom extends WitherRealmActions {
+public class WitherRealm_LoadRoom extends RealmActions {
     public WitherRealm_LoadRoom(String meshName, RealmController controller) {
         super(meshName, controller);
     }

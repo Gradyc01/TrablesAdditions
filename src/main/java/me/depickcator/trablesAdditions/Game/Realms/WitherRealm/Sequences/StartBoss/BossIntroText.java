@@ -42,10 +42,10 @@ public class BossIntroText extends GameSequences {
 
     private List<Component> initText() {
         return new ArrayList<>(List.of(
-                TextUtil.makeText("text1", TextUtil.DARK_GRAY),
-                TextUtil.makeText("text2", TextUtil.DARK_GRAY),
-                TextUtil.makeText("text3", TextUtil.DARK_GRAY),
-                TextUtil.makeText("text4", TextUtil.DARK_GRAY)
+                TextUtil.makeText("So fragile, yet so persistent", TextUtil.DARK_GRAY),
+                TextUtil.makeText("You’re just like the others. Blind. Foolish", TextUtil.DARK_GRAY),
+                TextUtil.makeText("You’re not special. You’re just another casualty waiting to happen", TextUtil.DARK_GRAY),
+                TextUtil.makeText("This is my kingdom. This is where I belong.", TextUtil.DARK_GRAY)
         ));
     }
 }

@@ -20,7 +20,7 @@ public class DimensionalTravel extends TrablesListeners {
         Block b = findPortalFrames(event.getFrom());
         if (b!=null) {
             String worldString = b.getMetadata(DIMENSIONAL_TRAVEL_KEY).getFirst().asString();
-            TextUtil.debugText(player.getName() + " has dimensionality travelling" + worldString);
+            TextUtil.debugText(player.getName() + " has dimensionality travelling " + worldString);
             RealmController controller = RealmController.getController(worldString);
             if (controller!=null) {
                 if (controller.getRealmState().onDimensionalTravel(event, controller)) {
@@ -41,7 +41,8 @@ public class DimensionalTravel extends TrablesListeners {
                     Location l = loc.clone().add(x, y, z);
                     Block block = l.getBlock();
 //                    TextUtil.debugText("Checking Block " + block.getType().name());
-                    if (l.getBlock().hasMetadata(DIMENSIONAL_TRAVEL_KEY) && l.getBlock().getType().equals(Material.NETHER_PORTAL)) {
+                    if (l.getBlock().hasMetadata(DIMENSIONAL_TRAVEL_KEY) &&
+                            (l.getBlock().getType().equals(Material.NETHER_PORTAL) || l.getBlock().getType().equals(Material.END_PORTAL))) {
                         TextUtil.debugText("Found Block " + block.getType().name());
                         return l.getBlock();
                     }

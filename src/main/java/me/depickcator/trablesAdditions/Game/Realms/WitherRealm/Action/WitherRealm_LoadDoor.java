@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
 import me.depickcator.trablesAdditions.Persistence.LocationMesh;
@@ -12,7 +13,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.IOException;
 
-public class WitherRealm_LoadDoor extends WitherRealmActions{
+public class WitherRealm_LoadDoor extends RealmActions {
 //    private final Set<WitherRealm_LoadRoom> triggeredRooms; /*The set of roms that would get loaded if this door were to be broken*/
     public WitherRealm_LoadDoor(String meshName, RealmController controller) {
         super(meshName, controller);

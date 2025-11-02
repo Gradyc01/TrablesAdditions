@@ -5,6 +5,9 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.recipe.CraftingBookCategory;
 
 public abstract class Craft extends CustomItem {
     protected Recipe recipe;
@@ -28,6 +31,17 @@ public abstract class Craft extends CustomItem {
     /*Initializes the Recipe and returns the Recipe that is initialized*/
     protected abstract Recipe initRecipe();
     protected abstract ItemStack initResult();
+
+    protected void reRegisterCraft() {
+        NamespacedKey key = null;
+        if (recipe instanceof ShapedRecipe shaped) key = shaped.getKey();
+        if (recipe instanceof ShapelessRecipe shapeless) key = shapeless.getKey();
+        if (key != null) {
+            plugin.getServer().removeRecipe(key);
+            recipe = initRecipe();
+            plugin.getCraftData().registerCraft(this);
+        }
+    }
 
     protected NamespacedKey generateKey() {
         return new NamespacedKey(plugin, getKey());

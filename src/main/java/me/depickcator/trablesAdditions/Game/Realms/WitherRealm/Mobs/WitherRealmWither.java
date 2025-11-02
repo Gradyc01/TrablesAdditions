@@ -3,6 +3,7 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 import me.depickcator.trablesAdditions.Game.Effects.Interfaces.ImmuneToEffects;
 import me.depickcator.trablesAdditions.Game.Items.WitherRealm.Materials.WitherRealmKey;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmNMSMob;
+import me.depickcator.trablesAdditions.Game.Realms.Shared.Entities.ItemDisplayDetection;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Boss.WitherRealmVex;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Boss.WitherRealmWitherSkeleton;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealmBossFight;
@@ -60,6 +61,7 @@ public class WitherRealmWither extends WitherBoss implements RealmNMSMob, Immune
         this.setNoAi(true);
         this.getBukkitEntity().setRotation(270, 0);
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(phase3Health * 2);
+        this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(100);
         this.setHealth(this.getMaxHealth());
         phase2Damage = (float) phase3Health / (float) phase2Health;
         this.targetSelector.removeAllGoals(goal -> true);
@@ -113,7 +115,7 @@ public class WitherRealmWither extends WitherBoss implements RealmNMSMob, Immune
 //        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
         World world = getLocation().getWorld();
         for (Player player : level.getPlayers(serverPlayer -> serverPlayer.isRealPlayer)) {
-            new ItemDisplay(getLocation(), WitherRealmKey.getInstance().getResult(),
+            new ItemDisplayDetection(getLocation(), WitherRealmKey.getInstance().getResult(),
                     List.of((org.bukkit.entity.Player) player.getBukkitLivingEntity()));
         }
     }

@@ -2,6 +2,7 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs;
 
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.entity.projectile.ProjectileDeflection;
@@ -50,9 +51,9 @@ public class WitherRealmFireball extends LargeFireball {
     }
 
     @Override
-    public boolean deflect(ProjectileDeflection deflection, @Nullable Entity entity, @Nullable Entity owner, boolean deflectedByPlayer) {
+    public boolean deflect(ProjectileDeflection deflection, @Nullable Entity entity, @Nullable EntityReference<Entity> owner, boolean deflectionByPlayer) {
         TextUtil.debugText("Deflected");
-        if (this.canBeReflected && deflectedByPlayer) {
+        if (this.canBeReflected && deflectionByPlayer) {
             return super.deflect(deflection, entity, owner, true);
         }
         return false;

@@ -4,10 +4,11 @@ import me.depickcator.trablesAdditions.Game.Effects.FloodBlocks;
 import me.depickcator.trablesAdditions.Game.Effects.PortalFrameConverter;
 import me.depickcator.trablesAdditions.Game.Effects.RealmOpeningAnimation;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
-import me.depickcator.trablesAdditions.Game.Player.PlayerInventories;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStates.DefaultState;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStats;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
-import me.depickcator.trablesAdditions.Game.Realms.SharedEntities.StartNPC.StartingNPC;
+import me.depickcator.trablesAdditions.Game.Realms.Shared.Entities.StartingNPC;
 import me.depickcator.trablesAdditions.Listeners.DimensionalTravel;
 import me.depickcator.trablesAdditions.Persistence.LocationMesh;
 import me.depickcator.trablesAdditions.Persistence.RealmMeshReader;
@@ -25,7 +26,6 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -43,12 +43,14 @@ public class RealmController {
     private BukkitTask portalLoop;
     private List<TextDisplay> portalTimeDisplay;
     private boolean isPortalOpen;
+    private boolean realmStopped;
     private final RealmPlayers realmPlayers;
 
     private static final Map<String, RealmController> realmControllers = new HashMap<>();
     public RealmController(Realm realm) {
         this.realm = realm;
         this.isPortalOpen = false;
+        this.realmStopped = false;
         reader = new RealmMeshReader(realm.getMeshFilePath());
         expendableWorldName = "./worlds/" + realm.getWorldName() + "_" + realm.getUUID();
         realmPlayers = new RealmPlayers(this);
@@ -82,13 +84,14 @@ public class RealmController {
     public void startRealm() {
         closePortal();
         realm.onStart(this);
-//        realmPlayers.solidifyPlayerList(expendableWorld.getPlayers());
         gameLoop();
         TextUtil.debugText("Realm Controller", "Started Realm: " + realm.getWorldName());
     }
 
     /*The Realm stops */
     public void stopRealm() {
+        if (realmStopped) return;
+        realmStopped = true;
         if (task != null) task.cancel();
         if (expendableWorld == null) {
             TextUtil.debugText("Realm Controller", "ERROR World is null when it shouldn't be: " + realm.getWorldName());
@@ -116,6 +119,8 @@ public class RealmController {
     }
 
     public void bossDefeated() {
+        realmPlayers.getPlayers().forEach(p -> {
+            PlayerUtil.getPlayerData(p).getPlayerStats().addNumberStat(PlayerStats.STAT_REALMS_CONQUERED, 1);});
         realm.onBossDefeated(this);
     }
 
@@ -227,6 +232,7 @@ public class RealmController {
 
     public void leaveWorld(PlayerData playerData, boolean teleportOut) {
         Player player = playerData.getPlayer();
+        playerData.setPlayerState(new DefaultState());
         if (teleportOut) player.teleport(realm.getPortalLocation());
         realmPlayers.removePlayer(playerData);
     }
@@ -296,6 +302,10 @@ public class RealmController {
             }
         }
         return directory.delete();  // Finally delete the directory itself
+    }
+
+    public boolean isRealmStopped() {
+        return realmStopped;
     }
 
     public static RealmController addController(String worldName, RealmController realmController) {

@@ -1,19 +1,12 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.UI;
 
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
-import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.WitherRealm_BreakDoor;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmWither;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockGUI;
-import me.depickcator.trablesAdditions.Util.SoundUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
-import net.kyori.adventure.text.Component;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;

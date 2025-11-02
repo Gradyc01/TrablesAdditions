@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Spider.WitherRealmCaveSpider;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Spider.WitherRealmSpider;
@@ -11,7 +12,7 @@ import org.bukkit.Location;
 import java.io.IOException;
 import java.util.Random;
 
-public class WitherRealm_LoadSpiderRoom extends WitherRealmActions {
+public class WitherRealm_LoadSpiderRoom extends RealmActions {
     public WitherRealm_LoadSpiderRoom(String meshName, RealmController controller) {
         super(meshName, controller);
     }

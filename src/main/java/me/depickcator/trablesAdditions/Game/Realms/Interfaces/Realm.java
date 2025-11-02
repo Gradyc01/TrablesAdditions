@@ -6,6 +6,7 @@ import me.depickcator.trablesAdditions.Game.Effects.PortalFrameRemover;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Interfaces.BoardMaker;
+import me.depickcator.trablesAdditions.Interfaces.ScoreboardObserver;
 import me.depickcator.trablesAdditions.Listeners.DimensionalTravel;
 import me.depickcator.trablesAdditions.Persistence.LocationMesh;
 import me.depickcator.trablesAdditions.TrablesAdditions;
@@ -17,27 +18,35 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public abstract class Realm implements Floodable {
+import static me.depickcator.trablesAdditions.Game.Realms.Interfaces.AbstractRealmStates.PLACED_BLOCK_TAG;
+
+public abstract class Realm implements Floodable, ScoreboardObserver {
     private final Location portalLocation;
 //    private final BlockFace portalBlockFace;
     private final String REALM_NAME;
     private final String DISPLAY_NAME;
     private RealmStates realmState;
+    protected final Map<Block, Integer> placedBlocks;
     private final UUID uuid;
+    protected RealmController controller;
     public Realm(Location portalLocation, String realmName, String displayName) {
         this.portalLocation = portalLocation;
 //        this.portalBlockFace = facing;
         this.REALM_NAME = realmName;
         this.DISPLAY_NAME = displayName;
         this.uuid = UUID.randomUUID();
+        placedBlocks = new HashMap<>();
 //        this.realmState = getStartingRealmState();
 
     }
@@ -47,12 +56,14 @@ public abstract class Realm implements Floodable {
         World portalWorld = portalLocation.getWorld();
         portalWorld.spawnParticle(Particle.EXPLOSION, portalLocation.clone().add(0, 2,0), 200, 5, 5, 5);
         portalWorld.playSound(portalLocation, Sound.ENTITY_GENERIC_EXPLODE, 5, 1f);
+        portalLocation.getChunk().setForceLoaded(true);
         File schem = new File(getPortalSchemFilePath());
         WorldEditUtil.pasteSchematic(schem, portalLocation);
     };
 
     public void closePortal() {
         new FloodBlocks(getPortalLocation(), 1, new PortalFrameRemover()).autoFlood(new Random());
+        portalLocation.getChunk().setForceLoaded(false);
     };
 
     public Location getPortalLocation() {
@@ -121,5 +132,29 @@ public abstract class Realm implements Floodable {
     @Override
     public double getNewSuccessRate(double oldSuccessRate, Random r) {
         return oldSuccessRate - r.nextDouble(0.1, 0.20);
+    }
+
+    public void addPlacedBlock(Block block) {
+        block.setMetadata(PLACED_BLOCK_TAG, new FixedMetadataValue(TrablesAdditions.getInstance(), Instant.now()));
+        placedBlocks.put(block, 1 + placedBlocks.getOrDefault(block, 0));
+    }
+
+    public boolean containsPlacedBlock(Block block) {
+        return placedBlocks.containsKey(block);
+    }
+
+    public void removeBlock(Block block) {
+        if (block.getBlockData() instanceof Waterlogged waterlogged) {
+            if (waterlogged.isWaterlogged()) waterlogged.setWaterlogged(false);
+            else block.setType(Material.AIR);
+        } else block.setType(Material.AIR);
+        if (placedBlocks.containsKey(block)) {
+            int amount = placedBlocks.get(block);
+            if (amount > 1) placedBlocks.put(block, amount - 1);
+            else placedBlocks.remove(block);
+        }
+        if (block.hasMetadata(PLACED_BLOCK_TAG)) {
+            block.removeMetadata(PLACED_BLOCK_TAG,  TrablesAdditions.getInstance());
+        }
     }
 }

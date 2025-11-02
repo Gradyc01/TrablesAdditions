@@ -32,10 +32,13 @@ public abstract class Weapon extends Craft {
         this.attackSpeed = attackSpeed;
         addCustomWeaponsTag(result);
         addModifiers(result);
+        reRegisterCraft();
     }
     protected Weapon(String displayName, String key, double attackDamage, double attackSpeed) {
         this(displayName, key, attackDamage, attackSpeed, false);
     }
+
+    public abstract boolean onCustomWeaponUse(EntityDamageByEntityEvent event, LivingEntity attacker, LivingEntity target);
 
     private void addCustomWeaponsTag(ItemStack item) {
 //        ItemMeta meta = item.getItemMeta();
@@ -54,8 +57,6 @@ public abstract class Weapon extends Craft {
     public static Weapon findCustomWeapon(ItemStack item) {
         return customWeapons.get(ItemComparison.itemParser(item));
     }
-
-    public abstract boolean onCustomWeaponUse(EntityDamageByEntityEvent event, LivingEntity attacker, LivingEntity target);
 
     protected void addModifiers(ItemStack item) {
         ItemMeta meta = item.getItemMeta();

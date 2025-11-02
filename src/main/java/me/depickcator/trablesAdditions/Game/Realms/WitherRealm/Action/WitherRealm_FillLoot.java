@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot.WitherRealmLoot;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot.WitherRealm_Tier1Loot;
@@ -16,7 +17,7 @@ import org.bukkit.block.Block;
 import java.io.IOException;
 import java.util.Random;
 
-public class WitherRealm_FillLoot extends WitherRealmActions {
+public class WitherRealm_FillLoot extends RealmActions {
     private final WitherRealm realm;
     /*Material must contain a material that has an inventory*/
     public WitherRealm_FillLoot(String meshName, RealmController controller, WitherRealm realm) {

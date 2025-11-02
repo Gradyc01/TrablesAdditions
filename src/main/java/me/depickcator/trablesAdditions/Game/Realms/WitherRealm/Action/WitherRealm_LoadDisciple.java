@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Zombies.WitherRealmDrowned;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
@@ -12,7 +13,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Random;
 
-public class WitherRealm_LoadDisciple extends WitherRealmActions {
+public class WitherRealm_LoadDisciple extends RealmActions {
     private final Location location;
     public WitherRealm_LoadDisciple(String meshName, RealmController controller, WitherRealm realm) {
         super(meshName, controller);

@@ -1,19 +1,17 @@
 package me.depickcator.trablesAdditions.Util;
 
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.ItemDisplay;
+import me.depickcator.trablesAdditions.Game.Realms.Shared.Entities.ItemDisplayDetection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -42,14 +40,16 @@ public class NMSMobUtil {
     private static int generateNumber(Random random) {
         if (random.nextDouble() < 0.75) {
             return -1;
-        } else if (random.nextDouble() < 0.85) {
+        } else if (random.nextDouble() < 0.83) {
             return 0;
-        } else if (random.nextDouble() < 0.93) {
+        } else if (random.nextDouble() < 0.90) {
             return 1;
-        } else if (random.nextDouble() < 0.98) {
+        } else if (random.nextDouble() < 0.95) {
             return 2;
+        } else if (random.nextDouble() < 0.98) {
+            return 3;
         }
-        return 3;
+        return 4;
     }
 
     public static Component generateHealthText(Component name, LivingEntity entity) {
@@ -73,7 +73,7 @@ public class NMSMobUtil {
             } else if (dropChance <= 0.50) {
                 dropCommonItem(item, location, damageSource);
             } else {
-                new ItemDisplay(location, item);
+                new ItemDisplayDetection(location, item);
             }
         }
     }
@@ -85,7 +85,7 @@ public class NMSMobUtil {
                     .append(TextUtil.makeText(TextUtil.getItemNameString(item), TextUtil.YELLOW))
                     .append(TextUtil.makeText("      (" +String.format("%.2f", dropChance * 100) + "%)", TextUtil.AQUA)));
         }
-        new ItemDisplay(location, item);
+        new ItemDisplayDetection(location, item);
     }
 
     private static void dropCommonItem(ItemStack item, Location location, DamageSource damageSource) {
@@ -94,6 +94,11 @@ public class NMSMobUtil {
             p.sendMessage(TextUtil.makeText("UNCOMMON DROP!   ", TextUtil.GREEN, true, false)
                     .append(TextUtil.makeText(TextUtil.getItemNameString(item), TextUtil.YELLOW)));
         }
-        new ItemDisplay(location, item);
+        new ItemDisplayDetection(location, item);
+    }
+
+    public static void setAndSpawn(Entity entity, Location location) {
+        entity.setPosRaw(location.getX(), location.getY(), location.getZ());
+        ((CraftWorld) location.getWorld()).getHandle().addFreshEntity(entity);
     }
 }

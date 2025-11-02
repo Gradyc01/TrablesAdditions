@@ -1,5 +1,6 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action;
 
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmLaunchGolem;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.Minibosses.WitherRealmSummonGolem;
@@ -13,7 +14,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Random;
 
-public class WitherRealm_LoadMiniBossRoom extends WitherRealmActions {
+public class WitherRealm_LoadMiniBossRoom extends RealmActions {
     private final Location location;
     private final Random random;
     public WitherRealm_LoadMiniBossRoom(String meshName, RealmController controller, WitherRealm realm) {

@@ -42,6 +42,13 @@ public class WitherRealmZombieKnight extends Zombie implements RealmNMSMob {
         giveAttributes();
     }
 
+    public WitherRealmZombieKnight(Location location, boolean dontSpawn) {
+        super(EntityType.ZOMBIE, ((CraftWorld) location.getWorld()).getHandle());
+        this.setPosRaw(location.getX(), location.getY(), location.getZ());
+        name = getMobName();
+        giveAttributes();
+    }
+
     private void giveAttributes() {
         this.equipment.set(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(initSword()));
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);

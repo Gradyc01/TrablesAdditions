@@ -10,6 +10,7 @@ import me.depickcator.trablesAdditions.Game.Items.Crafts.PortableWorkbench.Porta
 import me.depickcator.trablesAdditions.Game.Items.Crafts.RealmBench;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ArmorPiece;
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.CustomItem;
+import me.depickcator.trablesAdditions.Game.Items.LostCityLiberationRealm.LostCityLiberationKey;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.GrimoireBook;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.RepairKit;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
@@ -70,6 +71,7 @@ public class CraftData {
     public void initCrafts() {
         getGlobalItems();
         getWitherRealmItems();
+        getLostCityLiberationItems();
     }
     public List<CustomItem> getGlobalItems() {
         return List.of(PortableWorkbench.getInstance(), ZombieHeart.getInstance(), GrimoireBook.getInstance(),
@@ -83,7 +85,11 @@ public class CraftData {
                 ShatteredQuiver.getInstance(), SpiderSilk.getInstance(), ThunderCore.getInstance(), WitherRealmEntranceKey.getInstance(),
                 KrivonHelmet.getInstance(), KrivonChestplate.getInstance(), KrivonLeggings.getInstance(), KrivonBoots.getInstance(),
                 WitherRealmKey.getInstance(), InfinityBoom.getInstance(), UnreleasedOrdnance.getInstance(), GrowthSprout.getInstance(),
-                AdvanceGrowthCraft.getInstance());
+                AdvanceGrowthCraft.getInstance(), CallingOfTheSea.getInstance());
+    }
+
+    public List<CustomItem> getLostCityLiberationItems() {
+        return List.of(Torpedo.getInstance(), LostCityLiberationKey.getInstance());
     }
 
     public Collection<Craft> getAllCrafts() {

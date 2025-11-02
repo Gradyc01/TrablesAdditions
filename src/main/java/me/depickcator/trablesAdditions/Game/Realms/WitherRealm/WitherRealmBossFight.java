@@ -1,7 +1,7 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm;
 
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.WitherRealmActions;
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.WitherRealm_LoadRoom;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.Wither_BossState;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmWither;
@@ -14,7 +14,7 @@ import java.util.List;
 public class WitherRealmBossFight {
     private WitherRealmWither wither;
     private final List<WitherRealmBossControlPanelGUI> panels;
-    private final List<List<WitherRealmActions>> mobWaves;
+    private final List<List<RealmActions>> mobWaves;
     private final WitherRealm realm;
     private final RealmController controller;
     public WitherRealmBossFight(WitherRealm realm, RealmController controller) {
@@ -46,8 +46,8 @@ public class WitherRealmBossFight {
 
     public void spawnMobWave() {
         if (mobWaves.isEmpty()) return;
-        List<WitherRealmActions> wave = mobWaves.removeFirst();
-        for (WitherRealmActions action : wave) {
+        List<RealmActions> wave = mobWaves.removeFirst();
+        for (RealmActions action : wave) {
             action.start();
         }
 //        mobWaves.add(wave);
@@ -69,15 +69,15 @@ public class WitherRealmBossFight {
     }
 
     private void addMobWaves() {
-        WitherRealmActions l1 = new WitherRealm_LoadRoom("room_boss_l1", controller);
-        WitherRealmActions l2 = new WitherRealm_LoadRoom("room_boss_l2", controller);
-        WitherRealmActions l3 = new WitherRealm_LoadRoom("room_boss_l3", controller);
-        WitherRealmActions r1 = new WitherRealm_LoadRoom("room_boss_r1", controller);
-        WitherRealmActions r2 = new WitherRealm_LoadRoom("room_boss_r2", controller);
-        WitherRealmActions r3 = new WitherRealm_LoadRoom("room_boss_r3", controller);
-        WitherRealmActions m1 = new WitherRealm_LoadRoom("room_boss_m1", controller);
-        WitherRealmActions m2 = new WitherRealm_LoadRoom("room_boss_m2", controller);
-        WitherRealmActions m3 = new WitherRealm_LoadRoom("room_boss_m3", controller);
+        RealmActions l1 = new WitherRealm_LoadRoom("room_boss_l1", controller);
+        RealmActions l2 = new WitherRealm_LoadRoom("room_boss_l2", controller);
+        RealmActions l3 = new WitherRealm_LoadRoom("room_boss_l3", controller);
+        RealmActions r1 = new WitherRealm_LoadRoom("room_boss_r1", controller);
+        RealmActions r2 = new WitherRealm_LoadRoom("room_boss_r2", controller);
+        RealmActions r3 = new WitherRealm_LoadRoom("room_boss_r3", controller);
+        RealmActions m1 = new WitherRealm_LoadRoom("room_boss_m1", controller);
+        RealmActions m2 = new WitherRealm_LoadRoom("room_boss_m2", controller);
+        RealmActions m3 = new WitherRealm_LoadRoom("room_boss_m3", controller);
         mobWaves.addAll(new ArrayList<>(List.of(
                 List.of(m1, m2),
                 List.of(l1, r2),

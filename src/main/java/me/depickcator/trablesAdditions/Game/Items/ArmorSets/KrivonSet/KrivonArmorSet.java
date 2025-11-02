@@ -59,7 +59,7 @@ public class KrivonArmorSet extends ArmorSet {
         Instant now = Instant.now();
         if (player.hasMetadata(key)) {
             Instant time = Instant.parse(player.getMetadata(key).getFirst().asString());
-            if (!now.isAfter(time.plusSeconds(30))) return;
+            if (!now.isAfter(time.plusSeconds(120))) return;
         }
 //        if (player.getMetadata(key).getFirst().asString())
         double playerHealth = player.getHealth() - event.getFinalDamage();

@@ -46,7 +46,7 @@ public class WorldEditUtil {
                     .ignoreAirBlocks(false)
                     .build();
             Operations.complete(operation);
-            editSession.flushSession();
+            editSession.close();
         } catch (IOException | com.sk89q.worldedit.WorldEditException e) {
             TextUtil.debugText("WorldEdit Util", e.getMessage());
         }

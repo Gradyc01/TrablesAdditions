@@ -2,16 +2,21 @@ package me.depickcator.trablesAdditions.Listeners;
 
 import me.depickcator.trablesAdditions.Game.Items.Interfaces.ShootsProjectiles;
 import me.depickcator.trablesAdditions.TrablesAdditions;
+import me.depickcator.trablesAdditions.Util.ItemComparison;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Trident;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,10 +31,11 @@ public class ProjectileLaunch extends TrablesListeners {
         Projectile projectile = event.getEntity();
         ProjectileSource source = projectile.getShooter();
         fixProjectileBug(projectile, source);
-//        ItemStack weapon = findShooterItem(source);
-//        if (weapon == null) return;
-//        TextUtil.debugText("Weapon " + TextUtil.getComponentString(weapon.displayName()));
-
+        if (projectile instanceof Trident trident && source instanceof LivingEntity shooter) {
+            Event e = new EntityShootBowEvent(shooter, findShooterItem(shooter, trident.getItemStack()), trident.getItemStack(),
+                    projectile, EquipmentSlot.HAND, 1.0F, false);
+            event.setCancelled(!e.callEvent());
+        }
     }
 
     @EventHandler
@@ -46,7 +52,6 @@ public class ProjectileLaunch extends TrablesListeners {
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
-//        if (projectile.isEmpty()) return;
         ShootsProjectiles customProjectile = ShootsProjectiles.getProjectileByEntity(projectile);
         if (customProjectile != null) {
             event.setCancelled(!customProjectile.onHit(event));
@@ -68,13 +73,27 @@ public class ProjectileLaunch extends TrablesListeners {
             if (equipment == null) return null;
             ItemStack mainHand = equipment.getItemInMainHand();
             if (ShootsProjectiles.getProjectile(mainHand) != null || projectiles.contains(mainHand.getType())) {
-//                return ShootsProjectiles.getProjectile(mainHand);
                 return mainHand;
             }
             ItemStack offHand = equipment.getItemInOffHand();
             if (ShootsProjectiles.getProjectile(offHand) != null){
                 return offHand;
-//                return ShootsProjectiles.getProjectile(offHand);
+            }
+        }
+        return null;
+    }
+
+    private ItemStack findShooterItem(ProjectileSource source, ItemStack item) {
+        if (source instanceof LivingEntity livingEntity) {
+            EntityEquipment equipment = livingEntity.getEquipment();
+            if (equipment == null) return null;
+            ItemStack mainHand = equipment.getItemInMainHand();
+            if (ItemComparison.equalItems(mainHand, item)) {
+                return mainHand;
+            }
+            ItemStack offHand = equipment.getItemInOffHand();
+            if (ItemComparison.equalItems(offHand, item)){
+                return offHand;
             }
         }
         return null;

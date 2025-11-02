@@ -2,6 +2,7 @@ package me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates;
 
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Player.PlayerStats;
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.AbstractRealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.WitherRealm;
@@ -35,87 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public abstract class WitherRealmState implements RealmStates, ScoreboardObserver {
+public abstract class WitherRealmState extends AbstractRealmStates {
     private final WitherRealm realm;
-    private final Set<CreatureSpawnEvent.SpawnReason> reasons = Set.of(
-            CreatureSpawnEvent.SpawnReason.BUILD_WITHER, CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM,
-            CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN);
-    private final String REALM_KILLS_KEY;
-    private final String REALM_DEATHS_KEY;
     public WitherRealmState(WitherRealm realm) {
+        super(realm);
         this.realm = realm;
-        REALM_KILLS_KEY = realm.getWorldName() + realm.getUUID() + "_kills";
-        REALM_DEATHS_KEY = realm.getWorldName() + realm.getUUID() + "_deaths";
-    }
-
-    @Override
-    public void onPlayerBucket(PlayerBucketEvent event) {
-        ItemStack bucketResult = event.getItemStack();
-        Block targetBlock = event.getBlock();
-        if (bucketResult != null && bucketResult.getType().equals(Material.BUCKET)) {
-            if (event.getBucket().equals(Material.WATER_BUCKET)) targetBlock = treatWaterLogging(event);
-            if (targetBlock != null) {
-                realm.addPlacedBlock(targetBlock);
-            }
-        } else {
-            if (realm.containsPlacedBlock(targetBlock)) {
-                realm.removeBlock(targetBlock);
-            }
-        }
-    }
-
-    @Override
-    public void onPlayerDeath(PlayerDeathEvent event, RealmController controller) {
-        event.setCancelled(true);
-        controller.getRealmPlayers().playerDied(event.getPlayer());
-        if (event.deathMessage() !=null) TextUtil.broadcastMessage(event.deathMessage().color(TextUtil.DARK_RED));
-        PlayerData pD = PlayerUtil.getPlayerData(event.getPlayer());
-        pD.getPlayerStats().addNumberStat(REALM_DEATHS_KEY, 1);
-        pD.getPlayerScoreboards().updateBoard(this);
-    }
-
-    @Override
-    public void onMobSpawn(CreatureSpawnEvent event) {
-        if (reasons.contains(event.getSpawnReason()) || event.getEntityType().getKey().getKey().toLowerCase().contains("boat")) {
-            event.setCancelled(true);
-        }
-    }
-
-    @Override
-    public void onPlayerJoin(PlayerJoinEvent event, RealmController controller) {
-        controller.joinWorld(PlayerUtil.getPlayerData(event.getPlayer()));
-        new PlayerDeathEvent(event.getPlayer(), DamageSource.builder(DamageType.OUT_OF_WORLD).build(),
-                List.of(), 0, 0, TextUtil.makeText(""), false).callEvent();
-//        controller.getRealmPlayers().playerDied(event.getPlayer());
-    }
-
-    @Override
-    public void onPlayerLeave(PlayerQuitEvent event, RealmController controller) {
-        TextUtil.debugText("B");
-        controller.leaveWorld(PlayerUtil.getPlayerData(event.getPlayer()));
-        TextUtil.debugText("C");
-    }
-
-    @Override
-    public void onBlockBreak(BlockBreakEvent event) {
-        Block block = event.getBlock();
-        if (!block.hasMetadata("PLACED")) {
-            event.setCancelled(true);
-        }
-        block.removeMetadata("PLACED", TrablesAdditions.getInstance());
-    }
-
-    @Override
-    public void onBlockPlace(BlockPlaceEvent event) {
-        Block block = event.getBlock();
-        if (block.getType().equals(Material.TNT)) {
-            Block placedBlock = event.getBlockPlaced();
-            placedBlock.setType(Material.AIR);
-            TNTPrimed tnt = (TNTPrimed) placedBlock.getWorld().spawnEntity(placedBlock.getLocation().clone().add(0.5, 0 , 0.5), EntityType.TNT);
-            tnt.setSource(event.getPlayer());
-            return;
-        }
-        realm.addPlacedBlock(block);
     }
 
     @Override
@@ -124,57 +49,12 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
             String name = event.getEntity().getMetadata(WitherRealm.WITHER_REALM_DUNGEON_DISCIPLE_KEY).getFirst().asString();
             realm.removeDisciple(name);
         }
-        if (event.getDamageSource().getCausingEntity() instanceof Player player) {
-            PlayerData pD = PlayerUtil.getPlayerData(player);
-            pD.getPlayerStats().addNumberStat(REALM_KILLS_KEY, 1);
-            pD.getPlayerScoreboards().updateBoard(this);
-        }
-    }
-
-    @Override
-    public void onEntityExplode(EntityExplodeEvent event) {
-        onBlockExploded(event.blockList());
-    }
-
-    @Override
-    public void onBlockExplode(BlockExplodeEvent event) {
-        onBlockExploded(event.blockList());
-    }
-
-    @Override
-    public boolean onPlayerInteract(PlayerInteractEvent event, RealmController controller) {
-        if (event.getItem() != null && event.getItem().getType().name().toLowerCase().contains("boat")
-                && event.getAction().isRightClick()) {
-            event.setCancelled(true);
-            return false;
-        };
-        return true;
-    }
-
-    @Override
-    public boolean onDimensionalTravel(PlayerPortalEvent event, RealmController controller) {
-//        event.setCanCreatePortal(false);
-        controller.joinWorld(PlayerUtil.getPlayerData(event.getPlayer()));
-//        event.setCancelled(true);
-        return true;
-    }
-
-    @Override
-    public void onSet() {
-        //Do Nothing on purpose
-        BoardMaker boardMaker = realm.getBoardMaker();
-        boardMaker.addObserver(this);
-        boardMaker.updateAllViewers(this);
-    }
-
-    @Override
-    public boolean shouldProgressTime() {
-        return true;
-    }
-
-    @Override
-    public void onRemove() {
-        realm.getBoardMaker().removeObserver(this);
+//        if (event.getDamageSource().getCausingEntity() instanceof Player player) {
+//            PlayerData pD = PlayerUtil.getPlayerData(player);
+//            pD.getPlayerStats().addNumberStat(REALM_KILLS_KEY, 1);
+//            pD.getPlayerScoreboards().updateBoard(this);
+//        }
+        super.onEntityDeath(event);
     }
 
     @Override
@@ -184,50 +64,18 @@ public abstract class WitherRealmState implements RealmStates, ScoreboardObserve
         List<Component> objective = getObjectiveName();
         maker.editLine(board, 9, indent.append(objective.getFirst()));
         maker.editLine(board, 8, indent.append(objective.size() >= 2 ? objective.get(1) : TextUtil.makeText("")));
-
-        PlayerStats pS = playerData.getPlayerStats();
-        maker.editLine(board, 3, TextUtil.makeText(" Realm Kills: " + pS.getNumberStat(REALM_KILLS_KEY)));
-        maker.editLine(board, 2, TextUtil.makeText(" Realm Deaths: " + pS.getNumberStat(REALM_DEATHS_KEY)));
+        super.update(maker, board, playerData);
+//        PlayerStats pS = playerData.getPlayerStats();
+//        maker.editLine(board, 3, TextUtil.makeText(" Realm Kills: " + pS.getNumberStat(REALM_KILLS_KEY)));
+//        maker.editLine(board, 2, TextUtil.makeText(" Realm Deaths: " + pS.getNumberStat(REALM_DEATHS_KEY)));
     }
 
     /*Returns a List of Components that describe the objective name
     * Only the first two in the list will be used*/
     public abstract List<Component> getObjectiveName();
 
-    private void onBlockExploded(List<Block> blockList) {
-        for (Block block : new ArrayList<>(blockList)) {
-            if (!block.hasMetadata("PLACED")) {
-                blockList.remove(block);
-                block.removeMetadata("PLACED", TrablesAdditions.getInstance());
-            }
-        }
-    }
-
     public WitherRealm getRealm() {
         return realm;
-    }
-
-    private Block treatWaterLogging(PlayerBucketEvent event) {
-        ItemStack bucketResult = event.getItemStack();
-        Block targetBlock = event.getBlock();
-        if (targetBlock.getBlockData() instanceof Waterlogged waterlogged) {
-            Block relative = event.getBlockClicked().getRelative(event.getBlockFace());
-            if (relative.getType() != Material.AIR) {
-                int num = event.getPlayer().getEyeHeight() >= targetBlock.getY() ? 1 : -1;
-                relative = targetBlock.getLocation().clone().add(0, num,0).getBlock();
-            }
-            if (relative.getType() == Material.AIR) {
-                relative.setType(Material.WATER);
-            } else {
-                event.setCancelled(true);
-                return null;
-            }
-            event.setCancelled(true);
-            if (event.getHand() == EquipmentSlot.HAND) event.getPlayer().getInventory().setItemInMainHand(bucketResult);
-            else event.getPlayer().getInventory().setItemInOffHand(bucketResult);
-            return relative;
-        }
-        return targetBlock;
     }
 
     @Override

@@ -13,8 +13,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerJoinLeave extends TrablesListeners {
+    private final TrablesAdditions plugin;
+
+    public PlayerJoinLeave() {
+        super();
+        plugin = TrablesAdditions.getInstance();
+    }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
+        plugin.getWorldStats().updateStats();
         PlayerUtil.assignNewPlayerData(event.getPlayer());
         String worldName = event.getPlayer().getWorld().getName();
 //        for (Attribute attribute : Attribute) {
@@ -28,6 +35,7 @@ public class PlayerJoinLeave extends TrablesListeners {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
         TextUtil.debugText("Player Quit");
+        plugin.getWorldStats().updateStats();
         Player player = event.getPlayer();
         String worldName = player.getWorld().getName();
         RealmController controller = RealmController.getController(worldName);

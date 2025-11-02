@@ -43,6 +43,13 @@ public class WitherRealmRangerSkeleton extends Stray implements RealmNMSMob {
         giveAttributes();
     }
 
+    public WitherRealmRangerSkeleton(Location location, boolean dontSpawn) {
+        super(EntityType.STRAY, ((CraftWorld) location.getWorld()).getHandle());
+        this.setPosRaw(location.getX(), location.getY(), location.getZ());
+        name = getMobName();
+        giveAttributes();
+    }
+
     private void giveAttributes() {
         this.equipment.set(EquipmentSlot.MAINHAND, CraftItemStack.asNMSCopy(initBow()));
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);

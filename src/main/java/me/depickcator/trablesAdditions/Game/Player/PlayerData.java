@@ -2,6 +2,9 @@ package me.depickcator.trablesAdditions.Game.Player;
 
 import com.google.gson.JsonObject;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.GrimoireBook;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStates.DefaultState;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStates.PlayerAbstractState;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStates.PlayerState;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
 import me.depickcator.trablesAdditions.Persistence.PlayerDataReader;
 import me.depickcator.trablesAdditions.Persistence.PlayerDataWriter;
@@ -19,6 +22,8 @@ public class PlayerData {
     private final PlayerStats playerStats;
     private final PlayerArmorEffects playerArmorEffects;
     private final PlayerInventories playerInventories;
+    private PlayerState playerState;
+    private PlayerState previousState;
     public PlayerData(Player player) {
         this.plugin = TrablesAdditions.getInstance();
         this.player = player;
@@ -27,6 +32,7 @@ public class PlayerData {
         playerScoreboards = new PlayerScoreboards(this);
         playerArmorEffects = new PlayerArmorEffects(this);
         playerInventories = new PlayerInventories(this);
+        playerState = new DefaultState();
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             TextUtil.debugText("Starting Reader...");
@@ -76,5 +82,24 @@ public class PlayerData {
 
     public PlayerInventories getPlayerInventories() {
         return playerInventories;
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
+    }
+
+    public void setPlayerState(PlayerState playerState) {
+        TextUtil.debugText("Player State: " + player.getName(),"Setting Player... " + this.playerState.getStateName()
+                + "  to " + playerState.getStateName());
+        this.playerState.onRemove(this);
+        this.previousState = this.playerState;
+        this.playerState = playerState;
+        this.playerState.onSet(this);
+        TextUtil.debugText("Player State: " + player.getName(),"Current State: " + this.playerState.getStateName()
+                + "Previous State: " + this.previousState.getStateName());
+    }
+
+    public void returnToPreviousState() {
+        setPlayerState(previousState);
     }
 }

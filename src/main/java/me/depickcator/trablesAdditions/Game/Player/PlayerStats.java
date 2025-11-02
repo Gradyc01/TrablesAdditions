@@ -21,6 +21,9 @@ import java.util.concurrent.CompletableFuture;
 public class PlayerStats implements ScoreboardObserver, PlayerWritable, PlayerReadable {
     public static String STAT_KILLS = "kills";
     public static String STAT_DEATHS = "deaths";
+    public static String STAT_DISTANCE_TRAVELED = "distanceTraveled";
+    public static String STAT_REALMS_CONQUERED = "realmsConquered";
+    public static String STAT_TOTAL_WORLD_TIME = "timeSpent";
     private final TrablesAdditions plugin;
     private final Player player;
     private final Map<String, Integer> numberStats;
@@ -52,6 +55,9 @@ public class PlayerStats implements ScoreboardObserver, PlayerWritable, PlayerRe
 
     @Override
     public void update(BoardMaker maker, Objective board, PlayerData playerData) {
+//        maker.editLine(board, 11, TextUtil.makeText(" Total Playtime: " + TextUtil.formatTime(getNumberStat(STAT_TOTAL_WORLD_TIME))));
+//        maker.editLine(board, 10, TextUtil.makeText(" Distance Traveled: " + getNumberStat(STAT_DISTANCE_TRAVELED)));
+        maker.editLine(board, 9, TextUtil.makeText(" Realms Conquered: " + TextUtil.formatNumber(getNumberStat(STAT_REALMS_CONQUERED))));
         maker.editLine(board, 3, TextUtil.makeText(" Kills: " + TextUtil.formatNumber(getNumberStat(STAT_KILLS))));
         maker.editLine(board, 2, TextUtil.makeText(" Deaths: " + TextUtil.formatNumber(getNumberStat(STAT_DEATHS))));
     }
@@ -61,6 +67,7 @@ public class PlayerStats implements ScoreboardObserver, PlayerWritable, PlayerRe
         JsonObject json = new JsonObject();
         json.addProperty(STAT_KILLS, getNumberStat(STAT_KILLS));
         json.addProperty(STAT_DEATHS, getNumberStat(STAT_DEATHS));
+        json.addProperty(STAT_REALMS_CONQUERED, getNumberStat(STAT_REALMS_CONQUERED));
         return json;
     }
 
@@ -70,6 +77,7 @@ public class PlayerStats implements ScoreboardObserver, PlayerWritable, PlayerRe
             JsonObject object = jsonObject.get("stats").getAsJsonObject();
             setNumberStat(STAT_KILLS, object.get(STAT_KILLS).getAsInt());
             setNumberStat(STAT_DEATHS, object.get(STAT_DEATHS).getAsInt());
+            setNumberStat(STAT_REALMS_CONQUERED, object.get(STAT_REALMS_CONQUERED).getAsInt());
         }
     }
 

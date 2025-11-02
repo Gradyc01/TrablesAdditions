@@ -4,9 +4,11 @@ package me.depickcator.trablesAdditions.Game.Realms;
 import me.depickcator.trablesAdditions.Game.Effects.RevivePlayerInRealm;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Player.PlayerInventories;
+import me.depickcator.trablesAdditions.Game.Player.PlayerStates.DefaultState;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.GameOver.GameOver;
 import me.depickcator.trablesAdditions.Scoreboards.DefaultBoard;
 import me.depickcator.trablesAdditions.TrablesAdditions;
+import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -55,6 +57,7 @@ public class RealmPlayers {
 
     public void playerDied(Player player) {
         if (this.players.containsKey(player)) {
+            PlayerUtil.getPlayerData(player).setPlayerState(new DefaultState());
             this.players.put(player, false);
             deadPlayers.add(player);
             player.setGameMode(GameMode.SPECTATOR);

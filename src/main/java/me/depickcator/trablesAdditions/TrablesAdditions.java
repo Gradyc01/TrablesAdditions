@@ -14,6 +14,7 @@ public final class TrablesAdditions extends JavaPlugin {
     private static TrablesAdditions instance;
     private EntityInteractions entityInteractions;
     private CraftData craftData;
+    private WorldStats worldStats;
     private TrablesAdditions() {
 
     }
@@ -25,6 +26,7 @@ public final class TrablesAdditions extends JavaPlugin {
         initListeners();
         entityInteractions = new EntityInteractions();
         craftData = new CraftData();
+        worldStats = new WorldStats();
         craftData.initCrafts();
     }
 
@@ -46,6 +48,8 @@ public final class TrablesAdditions extends JavaPlugin {
     public CraftData getCraftData() {
         return craftData;
     }
+
+    public WorldStats getWorldStats() {return worldStats;}
 
     private void initCommands() {
         new Debugger(); new TrablesTest(); new CreateWorld(); new Travel(); new GiveCustomItem();

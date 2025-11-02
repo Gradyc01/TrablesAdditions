@@ -1,13 +1,13 @@
 package me.depickcator.trablesAdditions.Game.Realms.WitherRealm;
 
-import me.depickcator.trablesAdditions.Game.Effects.FloodBlocks;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.Realm;
+import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmActions;
 import me.depickcator.trablesAdditions.Game.Realms.Interfaces.RealmStates;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
+import me.depickcator.trablesAdditions.Game.Realms.Shared.Actions.BreakDoor;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Action.*;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.GameStates.*;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Loot.WitherRealmLoot;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Map.WitherRealmMap;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Sequences.StartBoss.StartBoss;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.UI.WitherRealm_LootGUI;
@@ -16,7 +16,6 @@ import me.depickcator.trablesAdditions.Interfaces.ScoreboardObserver;
 import me.depickcator.trablesAdditions.Scoreboards.WitherRealmBoard;
 import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.Interfaces.TrablesBlockGUI;
-import me.depickcator.trablesAdditions.UI.Interfaces.TrablesMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.SoundUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
@@ -24,11 +23,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.util.BoundingBox;
@@ -36,19 +32,20 @@ import org.bukkit.util.BoundingBox;
 import java.time.Instant;
 import java.util.*;
 
-public class WitherRealm extends Realm implements ScoreboardObserver {
+import static me.depickcator.trablesAdditions.Game.Realms.Interfaces.AbstractRealmStates.PLACED_BLOCK_TAG;
+
+public class WitherRealm extends Realm {
 
     /*Takes Door mesh names and pairs them with the rooms that it would load*/
-    private final Map<String, Set<WitherRealmActions>> roomMap;
+    private final Map<String, Set<RealmActions>> roomMap;
     public static String WITHER_REALM_DUNGEON_DOOR_KEY = "wither_realm_dungeon_door";
     public static String WITHER_REALM_DUNGEON_DISCIPLE_KEY = "wither_realm_disciple";
     public static String WITHER_REALM_BLOOD_DOOR_KEY = "wither_realm_blood_door";
     private final Set<String> actionsLoaded;
-    private final Map<Block, Integer> placedBlocks;
     private final Set<String> bossDisciples;
     private final Map<String, Set<WitherRealm_LootGUI>> lootGUIs; //Chest Names : LootGUIS
     private final Map<BoundingBox, WitherRealmMap> realmMap; //Bounding Boxes :
-    private RealmController controller;
+//    private RealmController controller;
     private Audience audience;
     private int timeTicks;
 
@@ -56,7 +53,6 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
         super(location, "wither_realm", "Wither Realm");
         roomMap = new HashMap<>();
         actionsLoaded = new HashSet<>();
-        placedBlocks = new HashMap<>();
         lootGUIs = new HashMap<>();
         bossDisciples = new HashSet<>();
         realmMap = new HashMap<>();
@@ -87,10 +83,6 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
     @Override
     public void onEnd(RealmController controller) {
         WitherRealmBoard.getInstance().removeObserver(this);
-//        for (WitherRealm_LootGUI lootGUI : new HashSet<>(lootGUIS)) {
-//            TrablesBlockGUI.removeGUI(lootGUI);
-//            lootGUIS.remove(lootGUI);
-//        }
         for (Map.Entry<String, Set<WitherRealm_LootGUI>> entry : new HashSet<>(lootGUIs.entrySet())) {
             for (WitherRealm_LootGUI lootGUI : entry.getValue()) {
                 TrablesBlockGUI.removeGUI(lootGUI);
@@ -100,8 +92,8 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
     }
 
     public void triggerDoor(String doorMeshName) {
-        if (roomMap.containsKey(doorMeshName) && new WitherRealm_BreakDoor(doorMeshName, controller).start()) {
-            for (WitherRealmActions action : roomMap.get(doorMeshName)) {
+        if (roomMap.containsKey(doorMeshName) && new BreakDoor(doorMeshName, controller).start()) {
+            for (RealmActions action : roomMap.get(doorMeshName)) {
                 if (actionsLoaded.add(action.getMeshName())) {
 //                    actionsLoaded.add(action.getMeshName());
                     action.start();
@@ -134,29 +126,6 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
         return "Wither Realm";
     }
 
-    public void addPlacedBlock(Block block) {
-        block.setMetadata("PLACED", new FixedMetadataValue(TrablesAdditions.getInstance(), Instant.now()));
-        placedBlocks.put(block, 1 + placedBlocks.getOrDefault(block, 0));
-    }
-
-    public boolean containsPlacedBlock(Block block) {
-        return placedBlocks.containsKey(block);
-    }
-
-    public void removeBlock(Block block) {
-        if (block.getBlockData() instanceof Waterlogged waterlogged) {
-            if (waterlogged.isWaterlogged()) waterlogged.setWaterlogged(false);
-            else block.setType(Material.AIR);
-        } else block.setType(Material.AIR);
-        if (placedBlocks.containsKey(block)) {
-            int amount = placedBlocks.get(block);
-            if (amount > 1) placedBlocks.put(block, amount - 1);
-            else placedBlocks.remove(block);
-        }
-        if (block.hasMetadata("PLACED")) {
-            block.removeMetadata("PLACED",  TrablesAdditions.getInstance());
-        }
-    }
 
     public void addDisciple(String meshName) {
         if (bossDisciples.contains(meshName)) {
@@ -285,11 +254,11 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
     private void removeOldBlocks() {
         Instant now = Instant.now();
         for (Block block : new HashSet<>(placedBlocks.keySet())) {
-            if (!block.hasMetadata("PLACED")) {
+            if (!block.hasMetadata(PLACED_BLOCK_TAG)) {
                 removeBlock(block);
                 return;
             }
-            Instant time = Instant.parse(block.getMetadata("PLACED").getFirst().asString());
+            Instant time = Instant.parse(block.getMetadata(PLACED_BLOCK_TAG).getFirst().asString());
             int timePassedRequirement = block.isLiquid() ? 2 : 5;
             if (now.isAfter(time.plusSeconds(timePassedRequirement))) {
                 removeBlock(block);
@@ -305,23 +274,23 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
         addDoor(doorMeshName, parseActions(roomMeshNames, chestMeshNames, discipleMeshNames));
     }
 
-    private Set<WitherRealmActions> parseActions(Set<String> roomMeshNames, Set<String> chestMeshNames, Set<String> discipleMeshNames) {
+    private Set<RealmActions> parseActions(Set<String> roomMeshNames, Set<String> chestMeshNames, Set<String> discipleMeshNames) {
         if (controller == null) return null;
-        Set<WitherRealmActions> actions = new HashSet<>() ;
+        Set<RealmActions> actions = new HashSet<>() ;
         for (String roomMeshName : roomMeshNames) actions.add(new WitherRealm_LoadRoom(roomMeshName, controller));
         for (String chestMeshName : chestMeshNames) actions.add(new WitherRealm_FillLoot(chestMeshName, controller, this));
         for (String discipleMeshName : discipleMeshNames) actions.add(new WitherRealm_LoadDisciple(discipleMeshName, controller, this));
         return actions;
     }
 
-    private void addDoor(String doorMeshName, Set<WitherRealmActions> actions) {
+    private void addDoor(String doorMeshName, Set<RealmActions> actions) {
 //        if (!new WitherRealm_LoadDoor(doorMeshName, controller).start()) return;
 //        if (controller == null) return;
 //        roomMap.put(doorMeshName, actions);
         addDoor(new WitherRealm_LoadDoor(doorMeshName, controller), actions);
     }
 
-    private void addDoor(WitherRealm_LoadDoor door, Set<WitherRealmActions> actions) {
+    private void addDoor(WitherRealm_LoadDoor door, Set<RealmActions> actions) {
         if (!door.start()) return;
         if (controller == null) return;
         roomMap.put(door.getMeshName(), actions);
@@ -347,7 +316,7 @@ public class WitherRealm extends Realm implements ScoreboardObserver {
             private void finish() {
                 audience.playSound(Sound.sound().type(Registry.SOUNDS.getKey(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL)).pitch(2f)
                         .volume(10).build());
-                new WitherRealm_BreakDoor("door",controller).start();
+                new BreakDoor("door",controller).start();
             }
         }.runTaskTimer(TrablesAdditions.getInstance(), 0, 20);
     }

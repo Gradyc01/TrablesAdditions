@@ -1,27 +1,34 @@
 package me.depickcator.Test.Commands;
 
 import me.depickcator.trablesAdditions.Commands.TrablesCommands;
+import me.depickcator.trablesAdditions.Game.Effects.LCLTrueSight;
 import me.depickcator.trablesAdditions.Game.Items.Crafts.PortableWorkbench.PortableWorkbench;
 import me.depickcator.trablesAdditions.Game.Items.Uncraftable.ReviveStone;
 import me.depickcator.trablesAdditions.Game.Player.PlayerData;
+import me.depickcator.trablesAdditions.Game.Realms.LostCityLiberationRealm.Mobs.*;
 import me.depickcator.trablesAdditions.Game.Realms.RealmController;
-import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.ItemDisplay;
+import me.depickcator.trablesAdditions.Game.Realms.Shared.Entities.ItemDisplay;
+import me.depickcator.trablesAdditions.Game.Realms.Shared.Entities.ItemDisplayDetection;
 import me.depickcator.trablesAdditions.Game.Realms.WitherRealm.Mobs.WitherRealmEndCrystal;
+import me.depickcator.trablesAdditions.TrablesAdditions;
 import me.depickcator.trablesAdditions.UI.MainMenuGUI;
 import me.depickcator.trablesAdditions.Util.PlayerUtil;
 import me.depickcator.trablesAdditions.Util.TextUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class TrablesTest extends TrablesCommands {
     private final List<WitherRealmEndCrystal> crystals = new ArrayList<>();
@@ -140,9 +147,19 @@ public class TrablesTest extends TrablesCommands {
     }
 
     private void summon(Player player, String string) {
+        Location loc = player.getLocation();
+
         switch (string) {
-            case "2" -> {}
-            default -> new ItemDisplay(player.getLocation().add(4, 4, 4), ReviveStone.getInstance().getResult());
+            case "vin" -> {new LCL_Vindicator(loc, new Random());}
+            case "pil" -> {new LCL_Pillager(loc, new Random());}
+            case "wit" -> {new LCL_Witch(loc);}
+            case "mig" -> {new LCL_MiniGolem(loc);}
+            case "evo" -> {new LCL_Evoker(loc);}
+            case "zomb" -> {new LCL_ZombieVillager(loc, new Random());}
+            case "true" -> {
+                new ItemDisplay(loc, new ItemStack(Material.TRIAL_SPAWNER), List.of(player));
+            }
+            default -> new ItemDisplayDetection(player.getLocation().add(4, 4, 4), ReviveStone.getInstance().getResult());
         }
     }
 
